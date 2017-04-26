@@ -1,3 +1,6 @@
-lib/*
-logs/*
-target/*
+/bulid/
+.*
+!.gitignore
+/lib/
+/logs/
+/target/
