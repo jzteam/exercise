@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	
+	<style type="text/css">
+		
+		#box1{
+			width:100px;
+			height:100px;
+			background-color: red;
+			position: absolute;
+		}
+		
+	</style>
+	
+	<script type="text/javascript">
+		
+		
+		
+		window.onload=function(event){
+			
+			event = event || window.event;
+			
+			var box1 = document.getElementById("box1");
+			
+			if(box1.setCapture){
+				box1.setCapture();
+			}
+			
+			
+			
+			box1.onmousedown = function(event){
+				
+				//alert("点我了");
+				var left = event.clientX;
+				var top = event.clientY;
+				
+				var rl = left - box1.offsetLeft;
+				var rt = top - box1.offsetTop;
+				
+				
+				document.onmousemove = function(event){
+					
+					
+					
+					event = event || window.event;
+					
+					var left = event.clientX;
+					var top = event.clientY;
+					
+					//console.log("left="+left+",top="+top);
+					
+					box1.style.left = left - rl + "px";
+					box1.style.top  = top - rt + "px";
+					
+				};
+				
+				document.onmouseup = function(event){
+					
+					document.onmousemove = null;
+					
+					document.onmouseup = null;
+					
+					box1.setCapture && box1.setCapture();
+					
+				};
+			}
+			
+			
+			
+		}
+		
+	</script>
+	<body>
+		
+		<div id="box1"></div>
+		
+	</body>
+</html>

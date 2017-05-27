@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			.DivSelect{
+			    position: relative;
+			    background-color: transparent;
+			    width:  140px;
+			    height: 17px;
+			    overflow: hidden; /*隐藏了小三角，因为宽度为110px,而select宽度为130px*/
+			    border-width:0px;
+			    border-top-style: none; 
+			    border-right-style: none; 
+			    border-left-style: none; 
+			    border-bottom-style: none;
+			}
+			/*设置Select样式*/
+			.SelectList
+			{
+			    position: relative;
+			    background-color: transparent;
+			    TOP:   -2px;
+			    left:-2px;
+			    border-width: 0px;
+			    border-top-style: none; 
+			    border-right-style: none; 
+			    border-left-style: none; 
+			    border-bottom-style: none;
+			    width:160px;
+			    display:block;
+			    height: 18px;
+			    overflow:hidden;
+			}
+			
+			#company_id{
+				outline:none;
+			}
+		</style>
+	</head>
+	<body>
+		
+		<div class="DivSelect">
+            <select class="SelectList">
+                <option>1111</option>
+                <option>2222</option>
+                <option>3333</option>
+                <option>4444</option>
+            </select>
+        </div>
+		
+		<div class="form-group1">
+		    <select name="company_id" id="company_id">
+		        <option value="0">供应商</option>
+		        <option value="600">微租车</option>
+		        <option value="601">宝驾</option>
+		    </select>
+		</div>
+	</body>
+</html>

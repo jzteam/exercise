@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		
+		<style type="text/css">
+			#box1{
+				width: 150px;
+				height:300px;
+				background-color: red;
+				position: absolute;
+				top: 300px;
+				left: -150px;
+			}
+			
+			#box2{
+				width:100px;
+				height: 100px;
+				background-color: green;
+				position: absolute;
+				top: 100px;
+				left:150px;
+			}
+		</style>
+		
+		<script type="text/javascript">
+			window.onload = function(){
+				
+				var box1= document.getElementById("box1");
+				var box2= document.getElementById("box2");
+				
+				box1.onmouseenter = function(){
+					setInterval(function(){
+						var left = 0;
+						if(box1.currentStyle){
+							left = box1.currentStyle.left;
+						}else{
+							console.log(box1.getComputedStyle);
+							left = box1.getComputedStyle;
+							
+						}
+						console.log("当前left="+left);
+						box1.style.left = left + 1 + "px";
+						
+						if(box1.currentStyle.left >= 0){
+							clearInterval();
+						}
+					},1000);
+//					box1.style.left = 0;
+				};
+				
+				box1.onmouseleave = function(){
+					box1.style.left = -150+"px";
+				};
+				
+				
+				
+			}
+		</script>
+	</head>
+	<body>
+		
+		<div id="box1">
+			<div id="box2">
+				
+			</div>
+		</div>
+	</body>
+</html>

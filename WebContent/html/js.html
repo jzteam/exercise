@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<script type="text/javascript">
+		/*
+		 * 水仙花：一个数字(>=3位)正好等于其各个位上的数字的三次方之和
+		 * 153 = 1*1*1 + 5*5*5 + 3*3*3 
+		 */
+		//getAllWaterFlower(1000);
+		function getAllWaterFlower(num){
+			// 声明水仙花数保存的地方
+			var arr = [];
+			// 遍历指定数字以内的数字，逐一判断
+			for(var i = 100;i<=num;i++){
+				if(i == getTotal(i)){
+					arr.push(i);
+				}
+			}
+			
+			console.log(i+"以内的水仙花数有：");
+			console.log(arr);
+			
+			/*
+			 * 内部方法，计算各位数字三次方之和
+			 */
+			function getTotal(num){
+				// 声明结果
+				var total = 0;
+				// 将num拆分成每个数字，放在数组里
+				var arr = num.toString().split("");
+				// 计算每个数字的三次方之和
+				for(var i = 0;i<arr.length;i++){
+					total += Math.pow(arr[i],3);
+				}
+				// 返回结果
+				return total;
+			}
+		}
+		
+		
+		
+		/*
+		 * 99乘法表
+		 */
+		//multi99();
+		function multi99(){
+			for(var x = 1; x <= 9; x++){
+				var line = "";
+				for(var y = 1; y <= x; y++){
+					line += x+" × " +y+" = "+x*y+"   ";
+				}
+				console.log(line);
+			}
+		}
+		
+		/**
+		 * 质数：除了1和本身，没有任何约数的整数
+		 * 返回指定数字以内的所有质数
+		 */
+		//getAllZhishu(100);
+		function getAllZhishu(num){
+			var arr = [];
+			for(var i = 2; i <= num; i++){
+				var flag = true;
+				for(var y = 2;y<i;y++){
+					if(i%y == 0){
+						flag = false;
+						break;
+					}
+				}
+				if(flag){
+					arr.push(i);
+				}
+			}
+			console.log(num+"以内的质数有：");
+			console.log(arr);
+			return arr;
+		}
+		
+		var a = "aaa".substr(1,2);
+		var obj = {a:a,c:getAllZhishu(10),b:"b"};
+		console.log(obj);
+		
+	</script>
+	<body>
+		
+		<td id="map-td" data-toggle="modal" data-target="#myModal">
+	        <span id='location'>-</span>
+	        <a id="map" ></a>
+	    </td>
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		    <div class="modal-dialog">
+		    	
+		            <div id="mapContainer"></div>
+		    </div>
+		</div>
+		
+		
+		
+		<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+			地图
+		</button>
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					
+					<div class="modal-body" style="width:200px;height:200px;">
+						
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal -->
+		</div>
+
+	</body>
+</html>
