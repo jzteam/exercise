@@ -18,10 +18,10 @@ public class ShardTable {
 
     public static void main(String[] args) {
 
-        String objectId = "505642";
+        String objectId = "6634199";
 
         int[] indexs = hash(objectId);
-        System.out.println("dbIndex = " + (indexs[0] % 16));
+        System.out.println("dbIndex = " + (indexs[0] % 2));
         System.out.println("tableIndex = " + (indexs[1]));
 
         // printSQL();
