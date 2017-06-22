@@ -1,7 +1,5 @@
 package cn.jzteam.test;
 
-import java.util.ArrayList;
-import java.util.List;
 
 
 
@@ -22,9 +20,11 @@ public class FirstTest {
         // BigDecimal.ROUND_HALF_UP);
         // System.out.println(divide.toString());
 
-        List<Object> list = new ArrayList<>();
-        list.get(0);
+        // List<Object> list = new ArrayList<>();
+        // list.get(0);
+
+        String str = "🤷🤷";
+        System.out.println(str);
 
     }
-
 }
