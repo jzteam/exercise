@@ -22,7 +22,11 @@ public class Son extends Parent {
     }
 
     public static void main(String[] args) {
-        Class<Object> superclass = Object.class.getSuperclass();
-        System.out.println(superclass);
+        Parent son = null;
+        son.test1();// invokestatic不需要实例
+    }
+    
+    public static void test1(){
+        System.out.println("我是son，super.getClass=");
     }
 }

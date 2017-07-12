@@ -20,5 +20,9 @@ public class Parent {
     public void setAge(Integer age) {
         this.age = age;
     }
+    
+    public static synchronized void test1(){
+        System.out.println("我是parent，super.getClass=");
+    }
 
 }

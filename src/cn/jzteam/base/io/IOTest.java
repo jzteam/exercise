@@ -1,4 +1,4 @@
-package cn.jzteam.base;
+package cn.jzteam.base.io;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
