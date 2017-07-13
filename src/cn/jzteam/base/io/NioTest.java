@@ -8,6 +8,13 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.Selector;
 import java.nio.channels.spi.SelectorProvider;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.Scanner;
+
+import org.junit.Test;
 
 public class NioTest {
     private static final int BSIZE = 1024;
@@ -52,5 +59,46 @@ public class NioTest {
             e.printStackTrace();
         }
         
+    }
+    
+    // 使用channel复制文件
+    @Test
+    public void test2(){
+
+        String path1 = "G:/study_test/base/nio/clipboard.png";
+        String path2 = "G:/study_test/base/nio/clipboard1.png";
+        FileChannel inChannel = null;
+        FileChannel outChannel =null;
+        
+        try {
+            inChannel = FileChannel.open(Paths.get(path1), StandardOpenOption.READ);
+            outChannel = FileChannel.open(Paths.get(path2), StandardOpenOption.CREATE,StandardOpenOption.WRITE);
+            
+            ByteBuffer buffer = ByteBuffer.allocate(1024);
+            while(inChannel.read(buffer) != -1){
+                buffer.flip();
+                outChannel.write(buffer);
+                buffer.clear();
+            }
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if(inChannel != null){
+                try {
+                    inChannel.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(outChannel != null){
+                try {
+                    outChannel.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    
     }
 }
