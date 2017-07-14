@@ -1,14 +1,17 @@
 package cn.jzteam.base.lambda;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.DoubleConsumer;
 
-import org.junit.Before;
 import org.junit.Test;
+
+import cn.jzteam.base.annotations.MyAnnotation;
 
 public class LambdaTest {
     
+    @MyAnnotation("haha")
+    @MyAnnotation("heiehi")
     private List<Person> list;
     
     {
@@ -19,6 +22,16 @@ public class LambdaTest {
         list.add(new Person("jzteam4",23,250));
         list.add(new Person("jzteam5",21,260));
     }
+    
+    @Test
+    public void test3() throws NoSuchFieldException, SecurityException{
+        Field field = LambdaTest.class.getDeclaredField("list");
+        MyAnnotation[] annotations = field.getDeclaredAnnotationsByType(MyAnnotation.class);
+        for (MyAnnotation myAnnotation : annotations) {
+            System.out.println(myAnnotation.value());
+        }
+    }
+    
     
     @Test
     public void test2(){
@@ -43,6 +56,7 @@ public class LambdaTest {
         
         Runnable r = () -> System.out.println("lambda 真棒");
         r.run();
+        
     }
 
 }

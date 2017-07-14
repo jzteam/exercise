@@ -112,7 +112,9 @@ public class Sort {
             
         }
         
-        swap(data,start,j);
+        swap(data,start,j);//此时的j是不满足条件的，一定比base小，所以将base和j交换一下
+        
+        // 此时，index>=i的一定是比base大的；index<j的一定比base小（本来j也比base小，但是交换之后，j就跟base相等了）
         
         quickSort(data,start,j-1);
         
