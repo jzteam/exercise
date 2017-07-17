@@ -56,6 +56,8 @@ public class LambdaTest {
         
         Runnable r = () -> System.out.println("lambda 真棒");
         r.run();
+        Thread thread = new Thread(() -> System.out.println("lambda 真棒"));
+        
         
     }
 
