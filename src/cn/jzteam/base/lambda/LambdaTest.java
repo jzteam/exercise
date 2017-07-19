@@ -60,7 +60,29 @@ public class LambdaTest {
         
         
     }
+    
+    @Test
+    public void test4(){
+        new LambdaTest().provider((x)->System.out.println(x), "food");
+    }
+    
+    private void provider(Human man,String str){
+        man.eat(str);
+    }
 
+}
+
+@FunctionalInterface
+interface Human {
+    public void eat(String str);
+    
+    default void get(String str){
+       System.out.println("get="+str);
+    }
+    
+    static void test(){
+        
+    }
 }
 class Person{
     private String name;
