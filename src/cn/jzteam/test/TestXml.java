@@ -8,7 +8,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import cn.jzteam.common.JsonUtil;
+import cn.jzteam.utils.JsonUtil;
 
 
 public class TestXml {

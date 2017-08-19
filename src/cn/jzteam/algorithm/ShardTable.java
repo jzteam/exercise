@@ -1,6 +1,6 @@
 package cn.jzteam.algorithm;
 
-import cn.jzteam.common.MD5Util;
+import cn.jzteam.utils.MD5Util;
 
 
 /**

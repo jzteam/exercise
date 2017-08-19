@@ -3,7 +3,7 @@ package cn.jzteam.test;
 import java.rmi.Naming;
 import java.rmi.registry.LocateRegistry;
 
-import cn.jzteam.zkrmi.impl.HelloServiceImpl;
+import cn.jzteam.core.rmi.impl.HelloServiceImpl;
 
 public class RmiTest {
 
