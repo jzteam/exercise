@@ -1,30 +1,41 @@
 package cn.jzteam.test;
 
-
-
+import java.util.List;
+import java.util.UUID;
 
 public class FirstTest {
 
     public static void main(String[] args) {
-        // System.out.println("请看：" + "jzteam".substring(0, 0));
-        //
-        // String[] str = { "df", "22" };
-        //
-        // List<String> list = new ArrayList<>();
-        // list.add("ddf");
-        //
-        //
-        // System.out.println(Double.valueOf("44999") / 14);
-        // BigDecimal divide =
-        // BigDecimal.valueOf(44999).divide(BigDecimal.valueOf(14), 2,
-        // BigDecimal.ROUND_HALF_UP);
-        // System.out.println(divide.toString());
-
-        // List<Object> list = new ArrayList<>();
-        // list.get(0);
-
-        String str = "🤷🤷";
-        System.out.println(str);
+         
+    	
 
     }
+    
+    public void batchCreateTx(List<String> txList,String uuid){
+    	// 大量查询判断 ...
+    	
+    	// 开启事务 DB.tran_begin();
+    	
+    	// 循环调用另一个service方法
+    	for (String tx : txList) {
+			createTx(tx,UUID.randomUUID().toString());
+		}
+    	
+    	// 更新其他表状态 updateExcute_notry
+    	
+    	// 提交事务 DB.commit();
+    }
+    
+    public void createTx(String tx,String uuid){
+    	// 大量查询判断 ... 
+    	
+    	// 开启事务 DB.tran_begin();
+    	
+    	// 插入数据库 updateExcute_notry
+    	
+    	// 提交事务 DB.commit();
+    	
+    }
+    
+    
 }
