@@ -49,12 +49,13 @@ public class Sort {
 //        quickSort(data,0,data.length-1);
         
         // 插入排序
-        insertSort(data);
+//        insertSort(data);
         
         // 折半插入排序
 //        binaryInsertSort(data);
         
-        
+        // 桶式排序
+        bucketSort(data);
         
         
 //        shellSort(data);
@@ -163,6 +164,7 @@ public class Sort {
             while(--j >= 0 && data[j].compareTo(temp) > 0){
                 data[j+1] = data[j];
             }
+            
             // 插入temp
             data[j+1] = temp;
         }
@@ -199,7 +201,71 @@ public class Sort {
         }
     }
     
-    // 希尔排序
+    // 桶式排序：一种思想，利用数组的位置来排序，然后通过累加消除空元素的影响
+    public static void bucketSort(Integer[] data){
+    	// 找到最小索引
+    	int min = 0;
+    	// 找到最大索引
+    	int max = 0;
+    	for (Integer i : data) {
+			if(i < min){
+				min = i;
+			}
+			if(i > max){
+				max = i;
+			}
+		}
+
+    	// 排序
+    	int[] bucket = new int[max - min + 1];
+    	for(int i = 0;i<data.length;i++){
+    		bucket[data[i] - min]++;
+    	}
+
+    	// 消除空元素的干扰，对有效元素进行排位
+    	for(int i = 1;i<bucket.length;i++){
+    		bucket[i] = bucket[i] + bucket[i-1];
+    	}
+    	
+    	System.out.println("bucket.length = " + bucket.length);
+    	
+    	// 临时数组，记录原数组数据
+    	Integer[] temp = new Integer[data.length];
+    	System.arraycopy(data, 0, temp, 0, data.length);
+    	
+    	// i从0开始就不稳定了，应该倒叙循环
+    	for(int i = temp.length - 1;i >= 0;i--){
+    		// 一定要是自减，因为重复的数据，还从这个位置取数，如果没有减减，那么得到的位置就会跟之前的相同
+    		data[--bucket[temp[i] - min]] = temp[i];
+    	}
+    	
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // TODO 归并排序
+    
+    
+    // TODO 希尔排序
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static void shellSort(Comparable[] data){
         int arrayLength = data.length;
@@ -222,6 +288,15 @@ public class Sort {
             h = (h - 1) / 3;
         }
     }
+    
+    // TODO 基数
+    
+    
+    
+    
+    
+    
+    
     
     
     /**

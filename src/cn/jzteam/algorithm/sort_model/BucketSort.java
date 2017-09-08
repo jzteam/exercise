@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 public class BucketSort {
 	public static void bucketSort(DataWrap[] data, int min, int max) {
-		System.out.println("��ʼ����");
 		int arrayLength = data.length;
 		DataWrap[] temp = new DataWrap[arrayLength];
 		int[] buckets = new int[max - min];
@@ -28,8 +27,8 @@ public class BucketSort {
 				new DataWrap(5, "*"), new DataWrap(7, ""),
 				new DataWrap(3, ""), new DataWrap(-3, ""),
 				new DataWrap(1, ""),new DataWrap(3, "*")};
-		System.out.println("����֮ǰ��\n" + java.util.Arrays.toString(data));
+		System.out.println( java.util.Arrays.toString(data));
 		bucketSort(data, -3, 10);
-		System.out.println("����֮��\n" + java.util.Arrays.toString(data));
+		System.out.println( java.util.Arrays.toString(data));
 	}
 }
