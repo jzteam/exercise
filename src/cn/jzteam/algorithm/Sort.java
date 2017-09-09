@@ -55,7 +55,7 @@ public class Sort {
 //        binaryInsertSort(data);
         
         // 桶式排序
-        bucketSort(data);
+//        bucketSort(data);
         
         
 //        shellSort(data);
