@@ -58,7 +58,7 @@ public class Sort {
 //        bucketSort(data);
         
         
-//        shellSort(data);
+        shellSort(data);
         
         System.out.println("排序耗时："+ (System.currentTimeMillis() - start));
         
