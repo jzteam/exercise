@@ -2,7 +2,7 @@ package cn.jzteam.test;
 
 import java.rmi.Naming;
 
-import cn.jzteam.zkrmi.HelloService;
+import cn.jzteam.core.rmi.HelloService;
 
 public class RmiClientTest {
 
