@@ -4,7 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 public class ArrayTest {
-
+	
     public static void main(String[] args) {
         int[] a = new int[] { 1, 2, 3, 4, 5, 6, 7 };
         int[] b = { 8, 9 };
