@@ -3,6 +3,7 @@ package cn.jzteam.work;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -15,14 +16,13 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import cn.jzteam.algorithm.LevenshteinUtil;
 
@@ -37,7 +37,34 @@ public class CompareExcel {
 	private static Map<String,List<String>> mysqlKey2all = new HashMap<>();
 	// 客户xls的银行结构：主行key -> 支行list
 	private static Map<String,List<String>> custKey2all = new HashMap<>();
+	
+	// 增量的行
+	private static List<Row> rowList = new ArrayList<>();
+	
+	// 统计增量主行个数
+	private static Map<String,Integer> custKeyCountMap = new HashMap<>();
+	private static Map<String,Integer> newCustKeyCountMap = new HashMap<>();
+	
+	// 确定为新增主行
+	private static List<String> diffNameList = new ArrayList<>();
+	static {
+		diffNameList.add("Salapa Bikas Bank Ltd");
+		diffNameList.add("GULMI BIKAS BANK LIMITED");
+		diffNameList.add("RARA DEVELOPMENT BANK");
+		diffNameList.add("Mahalaxmi Bikash Bank Ltd.");
+		diffNameList.add("Green Development Bank");
+		diffNameList.add("Karnali Development Bank");
+		diffNameList.add("RESUNGA BIKAS BANK LIMITED");
+		diffNameList.add("Kastamandap Bikash Bank Ltd.");
+		diffNameList.add("SAMABRIDHI BIKAS BANK LTD");
+		diffNameList.add("NILGIRI VIKAS BANK");
+		diffNameList.add("SAHARA BIKASH BANK LTD.");
+		diffNameList.add("Lumbini Bikas Bank");
+	}
 		
+	
+	// 存储数据库中多余的记录
+	private static Map<String,List<String>> result = new HashMap<>();
 	
 	
 	
@@ -51,7 +78,12 @@ public class CompareExcel {
 		// 方案二
 		Map<String, List<String>> handleFromMysql = handleFromMysql(mysqlPath);
 		methodSecond(custPath,handleFromMysql,resultPath);
-	
+		
+		// 方案三
+//		Map<String, List<String>> handleFromMysql = handleFromMysql(mysqlPath);
+//		Map<String, List<String>> handleFromCust = handleFromCust(custPath);
+//		methodThree(handleFromMysql,handleFromCust,resultPath);
+		
 	}
 	
 	/** 
@@ -115,7 +147,6 @@ public class CompareExcel {
 	 * @return
 	 * @throws Exception
 	 */
-	@SuppressWarnings("deprecation")
 	public static void methodSecond(String path,Map<String,List<String>> map,String resultPath) throws Exception{
 		
         InputStream input = new FileInputStream(path);
@@ -126,24 +157,9 @@ public class CompareExcel {
         // 获取工作表的总行数
         int rowCount = sheet.getPhysicalNumberOfRows();
         
-        // 定义增量的记录样式：相同的style都是同一个对象，改一个对象就是改了所有cell的样式
-        // 设置背景色
-		CellStyle cellStyle = workbook.createCellStyle();
-		cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);  
-		cellStyle.setFillForegroundColor(HSSFColor.LIGHT_YELLOW.index);
-		
-		cellStyle.setBorderTop(CellStyle.BORDER_THIN);// 单元格上边框
-		cellStyle.setBorderBottom(CellStyle.BORDER_THIN);// 单元格下边框
-		cellStyle.setBorderLeft(CellStyle.BORDER_THIN);// 单元格左边框
-		cellStyle.setBorderRight(CellStyle.BORDER_THIN);// 单元格右边框
-//		cellStyle.setAlignment(CellStyle.ALIGN_CENTER);// 单元格水平居中
-		cellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);// 单元格垂直居中
-		
-		
-		// 数据库中的主行key集合
-		Set<String> mysqlKeySet = map.keySet();
-		
-        
+        // 数据库中的主行key集合
+    	Set<String> mysqlKeySet = map.keySet();
+    	
         // 从第startRowIndex行开始，第1行是标题栏
         for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
         	// 行
@@ -158,38 +174,339 @@ public class CompareExcel {
             String key = makeKey(masterName);
             
             // 通过模糊匹配来配对主行名称
-            String mysqlKey = getMysqlKeySmiliar(key, mysqlKeySet, null);
-			
+            String mysqlKey = getKeySmiliar(key, mysqlKeySet, null);
+            
+            boolean contains = diffNameList.contains(masterName);
+            if(mysqlKey == null || contains){
+            	// 判断为新增记录
+            	addNewCust(currentRow,masterName);
+            	
+            	// 统计新增的主行
+    	    	Integer integer = newCustKeyCountMap.get(masterName);
+    	    	if(integer == null){
+    	    		newCustKeyCountMap.put(masterName, 1);
+    	    	}else{
+    	    		newCustKeyCountMap.put(masterName, ++integer);
+    	    	}
+            	
+            	continue;
+            }
+            
             List<String> mysqlList = map.get(mysqlKey);
             if(mysqlList == null){
-            	// 数据库没有该行
-            	setRowColor(currentRow, cellStyle);
+            	System.out.println("异常信息：根据mysqlKey获取不到对应的list：mysqlKey="+mysqlKey);
             	continue;
             }
             
             // 默认是客户的新记录
-            boolean flag = true;
-            // 遍历list比对支行名称
-            for (String mysqlStr : mysqlList) {
-            	if(compareBranchName(mysqlStr,branchName,null)){
-            		// 表示数据库中含有该记录，该记录不是客户的新纪录
-            		flag = false;
-            		break;
-            	}
-			}
-            
-            if(flag){
+            if(!compareBranchName(mysqlList,branchName,null)){
             	// 数据库没有该行
-            	setRowColor(currentRow, cellStyle);
-            }
+            	addNewCust(currentRow, masterName);
+        	}
         } 
         
-        FileOutputStream output = new FileOutputStream(resultPath);
-        workbook.write(output);
+        
+        makeWorkbook(rowList,resultPath);
+        
+        showStatistics();
         
         System.out.println("执行结束");
 	}
 	
+	
+	/**
+	 * 方案三：输出mysql.xlsx，客户数据中没有的信息
+	 * @param path
+	 * @return
+	 * @throws Exception
+	 */
+	public static void methodThree(Map<String,List<String>> mysqlMap,Map<String,List<String>> custMap,String resultPath) throws Exception{
+		
+		
+		Set<String> custKeySet = custMap.keySet();
+		
+		// 遍历mysqlMap
+		Set<Entry<String, List<String>>> mysqlSet = mysqlMap.entrySet();
+		for (Entry<String, List<String>> entry : mysqlSet) {
+			String mysqlKey = entry.getKey();
+			List<String> mysqlList = entry.getValue();
+			String mysqlName = mysqlKeyMap.get(mysqlKey);
+			
+			// 获取客户的key
+			String custKey = getKeySmiliar(mysqlKey, custKeySet, null);
+			
+			if(custKey == null){
+				// 数据库已经不存在这个主行了
+				result.put(mysqlName, mysqlList);
+				continue;
+			}
+			
+			List<String> custList = custMap.get(custKey);
+			
+			// 比对custList和mysqlList
+			
+			//先处理custList的名称
+			List<String> tempCustList = new ArrayList<>();
+			for (String custBranchName : custList) {
+				// 客户数据：大部分是减号分隔取最后；逗号分隔取最前（特点是括号结尾）
+				String tempBranch = custBranchName;
+				String[] branchSplit = tempBranch.split("-");
+				if(branchSplit.length == 2){
+					// 大多数情况
+					tempBranch = branchSplit[1].trim().toLowerCase();
+				}else if(branchSplit.length == 1){
+					String[] ds = tempBranch.split(",");
+					if(ds.length == 2 && ds[1].endsWith(")")){
+						// 少数情况，支行在前，主行在后，逗号分隔，括号结尾
+						tempBranch = ds[0].trim().toLowerCase();
+					}else{
+						tempBranch = tempBranch.trim().toLowerCase();
+					}
+				}else if(branchSplit.length > 2){
+					// 极少情况
+					tempBranch = tempBranch.trim().toLowerCase();
+				}
+				// 为统一分隔符，把中间的空格替换成逗号
+				tempBranch = replaceBlank(tempBranch, ",");
+				
+				tempCustList.add(tempBranch);
+			}
+			
+			for (String mysqlBranchName : mysqlList) {
+				
+				// mysql数据:为统一分隔符，把中间的空格替换成逗号
+				String tempMysql = replaceBlank(mysqlBranchName.trim().toLowerCase(),",");
+				
+				// 标记:没有相同的
+				boolean flag = false;
+				
+				for (String tempBranch : tempCustList) {
+					
+					if("Pokhara - Chipledhunga".equals(mysqlBranchName) && mysqlName.equals("Om Development Bank") && tempBranch.contains("chipledhunga")){
+						System.out.println("Chipledhunga");
+					}
+					
+					float similarityRatio = getBranchNameSimilarity(tempBranch, tempMysql);
+					if(similarityRatio >= 0.9){
+						flag = true;
+						break;
+					}
+				}
+				
+				if(!flag){
+					addLeftMysql(mysqlName,mysqlKey,mysqlBranchName);
+				}
+				
+			}
+			
+		}
+		
+		makeXlsx(result,resultPath);
+        
+//        showStatistics();
+        
+        System.out.println("执行结束");
+	}
+	
+	private static String replaceBlank(String temp,String separator){
+		if(temp == null){
+			return "";
+		}
+		temp = temp.trim();
+		String[] split = temp.split(" ");
+		temp = split[0];
+		for(int i = 1;i<split.length;i++){
+			if(!StringUtils.isEmpty(split[i]) && !split[i].equals("-")){
+				temp += separator + split[i];
+			}
+		}
+		return temp;
+	}
+	
+
+	@SuppressWarnings("deprecation")
+	private static void makeXlsx(Map<String, List<String>> result, String resultPath) throws IOException {
+		// 声明一个工作簿【SXSSFWorkbook只支持.xlsx格式】
+        Workbook workbook = new SXSSFWorkbook(1000);// 内存中只存放1000条
+        // 生成一个表格
+        Sheet sheet = workbook.createSheet("result");
+        // 设置表格的默认宽度为28个字节
+        sheet.setDefaultColumnWidth(28);
+        // 生成一个样式【用于表格标题】
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setBorderTop(CellStyle.BORDER_THIN);// 单元格上边框
+        cellStyle.setBorderBottom(CellStyle.BORDER_THIN);// 单元格下边框
+        cellStyle.setBorderLeft(CellStyle.BORDER_THIN);// 单元格左边框
+        cellStyle.setBorderRight(CellStyle.BORDER_THIN);// 单元格右边框
+        cellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);// 单元格垂直居中
+        
+        Set<Entry<String, List<String>>> entrySet = result.entrySet();
+        
+        int i = 0;
+        for (Entry<String, List<String>> entry : entrySet) {
+			String masterName = entry.getKey();
+			List<String> branchList = entry.getValue();
+			
+			if(CollectionUtils.isEmpty(branchList)){
+				Row row = sheet.createRow(i++);
+				
+				// 序号列
+				Cell createCell = row.createCell(0);
+				createCell.setCellValue(i+"");
+				createCell.setCellStyle(cellStyle);
+				
+				// 主行名称
+				Cell createCell2 = row.createCell(1);
+				createCell2.setCellValue(masterName);
+				createCell2.setCellStyle(cellStyle);
+				
+				continue;
+			}
+			
+			for (String branchName : branchList) {
+				
+				Row row = sheet.createRow(i++);
+				
+				// 序号列
+				Cell createCell = row.createCell(0);
+				createCell.setCellValue(i+"");
+				createCell.setCellStyle(cellStyle);
+				
+				// 主行名称
+				Cell createCell2 = row.createCell(1);
+				createCell2.setCellValue(masterName);
+				createCell2.setCellStyle(cellStyle);
+				
+				// 支行名称
+				Cell createCell3 = row.createCell(2);
+				createCell3.setCellValue(branchName);
+				createCell3.setCellStyle(cellStyle);
+			}
+			
+		}
+        
+        
+        FileOutputStream os = new FileOutputStream(resultPath);
+        workbook.write(os);
+        workbook.close();
+		
+	}
+
+	private static void addLeftMysql(String mysqlName, String mysqlKey, String mysqlBranchName) {
+	
+		List<String> list = result.get(mysqlName);
+		if(list == null){
+			list = new ArrayList<>();
+			result.put(mysqlName, list);
+		}
+		
+		list.add(mysqlBranchName);
+		
+	}
+
+	private static void showStatistics() {
+		System.out.println();
+        System.out.println("======增量支行==========");
+        System.out.println();
+
+        int total = 0;
+        Set<Entry<String, Integer>> entrySet = custKeyCountMap.entrySet();
+        System.out.println("增量支行有："+entrySet.size()+"个");
+        for (Entry<String, Integer> entry : entrySet) {
+        	total += entry.getValue();
+        	System.out.println(entry.getKey()+"  -->  "+entry.getValue()+"个");
+		}
+        System.out.println("增量支行："+total+"个");
+        
+        System.out.println();
+        System.out.println(">>>>>>新增主行>>>>>>>>>>>>");
+        System.out.println();
+
+        Set<Entry<String, Integer>> entrySet1 = newCustKeyCountMap.entrySet();
+        System.out.println("新增主行有："+entrySet1.size()+"个");
+        int newTotal = 0;
+        for (Entry<String, Integer> entry : entrySet1) {
+			System.out.println(entry.getKey()+"  -->  有"+entry.getValue()+"个");
+			newTotal += entry.getValue();
+		}
+        System.out.println("新增主行共有支行："+newTotal+"个");
+	}
+
+	/**
+	 * 判断为新增的支行，处理数据
+	 * @param currentRow
+	 * @param masterName
+	 */
+	private static void addNewCust(Row currentRow, String masterName) {
+		//setRowColor(currentRow, cellStyle);
+		
+		// 如果该主行已经是确认过不相同的，那么就直接加入新增列表
+    	rowList.add(currentRow);
+    	
+    	// 统计新增的支行
+    	Integer integer = custKeyCountMap.get(masterName);
+    	if(integer == null){
+    		custKeyCountMap.put(masterName, 1);
+    	}else{
+    		custKeyCountMap.put(masterName, ++integer);
+    	}
+	}
+
+	@SuppressWarnings("deprecation")
+	private static void makeWorkbook(List<Row> rowList, String resultPath) throws IOException {
+		if(CollectionUtils.isEmpty(rowList)){
+			System.out.println("异常信息：rowList为空");
+			return;
+		}
+		
+		Workbook wb = new SXSSFWorkbook(1000);// 内存中只存放1000条
+        // 生成一个表格
+        Sheet st = wb.createSheet("result");
+        
+        // 设置表格的默认宽度为28个字节
+        st.setDefaultColumnWidth(28);
+        
+        // 样式
+        CellStyle cellStyle = wb.createCellStyle();
+		cellStyle.setBorderTop(CellStyle.BORDER_THIN);// 单元格上边框
+		cellStyle.setBorderBottom(CellStyle.BORDER_THIN);// 单元格下边框
+		cellStyle.setBorderLeft(CellStyle.BORDER_THIN);// 单元格左边框
+		cellStyle.setBorderRight(CellStyle.BORDER_THIN);// 单元格右边框
+		cellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);// 单元格垂直居中
+        
+        for(int i = 0;i<rowList.size();i++){
+        	Row createRow = st.createRow(i);
+        	Row row = rowList.get(i);
+        	
+        	// 插入序号列
+        	Cell firstCell = createRow.createCell(0);
+        	firstCell.setCellValue(i+"");
+        	
+        	short lastCellNum = row.getLastCellNum();
+        	// 除了第一列其他都是String
+        	for(int n = 1;n<lastCellNum;n++){
+        		Cell cell = row.getCell(n);
+        		int cellType = cell.getCellType();
+        		String stringCellValue = "";
+        		if(cellType == Cell.CELL_TYPE_NUMERIC){
+        			cell.setCellType(Cell.CELL_TYPE_STRING);
+        			stringCellValue = cell.getRichStringCellValue().toString();
+        		}else if(cellType == Cell.CELL_TYPE_FORMULA){
+        			stringCellValue = String.valueOf(cell.getCellFormula());
+        		}else if(cellType == Cell.CELL_TYPE_STRING){
+        			stringCellValue = cell.getStringCellValue();
+        		}
+        		
+        		Cell createCell = createRow.createCell(n);
+        		createCell.setCellStyle(cellStyle);
+        		createCell.setCellValue(stringCellValue);
+        	}
+        }
+        
+        FileOutputStream output = new FileOutputStream(resultPath);
+        wb.write(output);
+		wb.close();
+	}
 
 	/**
 	 * 解析数据库导出的xlsx
@@ -265,7 +582,7 @@ public class CompareExcel {
 			map.put(key,value);
 			
 			// 打印主行名称使用
-//			mysqlKeyMap.put(key, masterName);
+			mysqlKeyMap.put(key, masterName);
 		}
         
         return map;
@@ -308,14 +625,13 @@ public class CompareExcel {
             if(list == null){
             	list = new ArrayList<>();
             	data.put(key, list);
-//            	custKeyMap.put(key, masterName);
+            	custKeyMap.put(key, masterName);
             }
             list.add(branchName);
         }  
         
         return data;
 	}
-	
 	
 	
 	private static void setRowColor(Row row, CellStyle style){
@@ -330,9 +646,6 @@ public class CompareExcel {
 			cell.setCellStyle(style);
 		}
 	}
-	
-	
-	
 	
 	private static void handleMasterSmiliar(String key, Set<String> mysqlMasterKeySet) {
 		float max = 0.7f;
@@ -367,12 +680,12 @@ public class CompareExcel {
 	/**
 	 * 从set中获取跟key最大相似度的String
 	 * @param key
-	 * @param mysqlMasterKeySet
+	 * @param masterKeySet
 	 */
-	private static String getMysqlKeySmiliar(String key, Set<String> mysqlMasterKeySet, Float minSmiliar) {
+	private static String getKeySmiliar(String key, Set<String> masterKeySet, Float minSmiliar) {
 		float max = minSmiliar == null ? 0.7f : minSmiliar;
 		String result = null;
-		for (String temp : mysqlMasterKeySet) {
+		for (String temp : masterKeySet) {
 			float similarityRatio = LevenshteinUtil.getSimilarityRatio(temp, key);
 			if(similarityRatio > max){
 				result = temp;
@@ -389,42 +702,110 @@ public class CompareExcel {
 	 * @param branchName
 	 * @return
 	 */
-	private static boolean compareBranchName(String mysqlStr, String branchName, Float similarLimit) {
+	private static boolean compareBranchName(List<String> mysqlStrList, String branchName, Float similarLimit) {
 		// 客户数据：大部分是减号分隔取最后；逗号分隔取最前（特点是括号结尾）
 		String tempBranch = branchName;
 		String[] branchSplit = tempBranch.split("-");
 		if(branchSplit.length == 2){
 			// 大多数情况
-			tempBranch = branchSplit[1].trim().toLowerCase().replace(" ", "");
+			tempBranch = branchSplit[1].trim().toLowerCase();
 		}else if(branchSplit.length == 1){
 			String[] ds = tempBranch.split(",");
 			if(ds.length == 2 && ds[1].endsWith(")")){
-				// 只有主行，少数情况
-				tempBranch = ds[0].trim().toLowerCase().replace(" ", "");
+				// 少数情况，支行在前，主行在后，逗号分隔，括号结尾
+				tempBranch = ds[0].trim().toLowerCase();
 			}else{
-				tempBranch = tempBranch.trim().toLowerCase().replace(" ", "");
+				tempBranch = tempBranch.trim().toLowerCase();
 			}
 		}else if(branchSplit.length > 2){
 			// 极少情况
-			tempBranch = tempBranch.trim().toLowerCase().replace(" ", "");
+			System.out.println("cust的支行名称，极少情况：branchName="+branchName);
+			tempBranch = tempBranch.trim().toLowerCase().replace("-", "");
+		}
+		// 为统一分隔符，把中间的空格替换成逗号
+		tempBranch = replaceBlank(tempBranch, ",");
+//		System.out.println(branchName + "  >>>  "+tempBranch);
+		
+		for (String mysqlStr : mysqlStrList) {
+			// mysql数据:为统一分隔符，把中间的空格和减号替换成逗号
+			String tempMysql = mysqlStr.trim().toLowerCase();
+			tempMysql = replaceBlank(tempMysql,",");
+			
+			float similarityRatio = getBranchNameSimilarity(tempBranch, tempMysql);
+			
+//			System.out.println(mysqlStr + "  >>>  "+tempMysql);
+//			System.out.println("相似度："+similarityRatio);
+			
+			if(similarLimit == null){
+				// 因为拆分较细，支行名称较短，单词少，所以默认相似度较高，0.9f
+				similarLimit = 0.9f;
+			}
+			
+			if(similarityRatio >= similarLimit){
+//				System.out.println();
+				return true;
+			}
+			
 		}
 		
-		// mysql数据
-		String tempMysql = mysqlStr.trim().toLowerCase().replace(" ", "");
-		
-		float similarityRatio = LevenshteinUtil.getSimilarityRatio(tempBranch, tempMysql);
-		
-		if(similarLimit == null){
-			// 支行名称匹配，默认相似度0.9
-			similarLimit = 0.9f;
-		}
-		
-		return similarityRatio >= similarLimit;
+//		System.out.println();
+		return false;
 	}
 
 	
 	
-	
+	/**
+	 * 比较拆分之后的支行名称
+	 * 两者都有逗号，则统一去掉逗号再比对；
+	 * 两者都没有逗号，则直接比对；
+	 * 一者有，另一个没有，则再拆分分别比对
+	 * 
+	 * 有的是逗号分隔，有的是空格分隔
+	 * @param tempBranch
+	 * @param tempMysql
+	 * @return
+	 */
+	private static float getBranchNameSimilarity(String tempBranch, String tempMysql) {
+		if(StringUtils.isEmpty(tempBranch) || StringUtils.isEmpty(tempMysql)){
+			return 0;
+		}
+		
+		String[] custSplit = tempBranch.split(",");
+		String[] mysqlSplit = tempMysql.split(",");
+		if(custSplit.length == 1 && mysqlSplit.length == 1){
+			// 都没有逗号
+			return LevenshteinUtil.getSimilarityRatio(tempBranch, tempMysql);
+		}else if(custSplit.length > 1 && mysqlSplit.length > 1){
+			// 都有逗号
+			String replaceBranch = tempBranch.replace(",", "");
+			String replaceMysql = tempMysql.replace(",", "");
+			return LevenshteinUtil.getSimilarityRatio(replaceBranch, replaceMysql);
+		}else if(custSplit.length > 1 && mysqlSplit.length == 1){
+			// 客户数据有逗号，数据库没有
+			float max = 0.0f;
+			for (String custName : custSplit) {
+				float tempRatio = LevenshteinUtil.getSimilarityRatio(custName, tempMysql);
+				if(tempRatio > max){
+					max = tempRatio;
+				}
+			}
+			return max;
+		}else if(custSplit.length == 1 && mysqlSplit.length > 1){
+			// 客户数据没有逗号，数据库有
+			float max = 0.0f;
+			for (String mysqlName : mysqlSplit) {
+				float tempRatio = LevenshteinUtil.getSimilarityRatio(mysqlName, tempBranch);
+				if(tempRatio > max){
+					max = tempRatio;
+				}
+			}
+			return max;
+		}else{
+			System.out.println("异常情况：tempBranch="+tempBranch+",tempMysql="+tempMysql);
+			return 0;
+		}
+	}
+
 	/**
 	 * 规则：全小写，如果有./ltd/limited等结尾，要去掉，过滤调中间空格
 	 * @param str
