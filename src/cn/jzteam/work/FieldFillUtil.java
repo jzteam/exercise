@@ -1,6 +1,6 @@
 package cn.jzteam.work;
-import cn.jzteam.module.spring.ApplicationContextHolder;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -10,43 +10,12 @@ import java.util.Map;
 
 public class FieldFillUtil {
 
-    private static NationAreaDao nationAreaDao;
-    private static UserDao userDao;
-
-    static {
-        nationAreaDao = ApplicationContextHolder.getBean(NationAreaDao.class);
-        userDao = ApplicationContextHolder.getBean(UserDao.class);
-    }
-
-    /**
-     * 从formList中每个对象form中，取字段idField的值，获取数据库中对应的Entity对象，通过convert函数进行form与entity的赋值
-     * @param formList
-     * @param idField
-     * @param convert
-     * @param <T>
-     */
-    public static <T> void fillNationData(List<T> formList, String idField, Convert<T, NationAreaEntity> convert) {
-        List<Long> idList = getIdsFromList(formList, idField);
-        if(CollectionUtils.isEmpty(idList)){
-            return;
-        }
-
-        convertList(formList, nationAreaDao.selectByIds(idList), idField, convert);
-
-    }
-
-    public static <T> void fillUserData(List<T> formList, String idField, Convert<T, UserEntity> convert) {
+    public static <F, E> void convertList(List<F> formList, String idField,FunctionListById<E, Long> listFunction, Convert<F, E> convert) {
 
         List<Long> idList = getIdsFromList(formList, idField);
-        if(CollectionUtils.isEmpty(idList)){
-            return;
-        }
 
-        convertList(formList, userDao.selectByIds(idList), idField, convert);
+        List<E> entityList = listFunction.listEntity(idList);
 
-    }
-
-    public static <F, E> void convertList(List<F> formList, List<E> entityList, String idField, Convert<F, E> convert) {
         if (CollectionUtils.isEmpty(entityList)) {
             return;
         }
@@ -106,7 +75,7 @@ public class FieldFillUtil {
      * @return
      */
     public static Long getFieldValueFromObj(String fieldName, Object obj) {
-        if (StringUtil.isEmpty(fieldName) || obj == null) {
+        if (StringUtils.isEmpty(fieldName) || obj == null) {
             return null;
         }
         try {

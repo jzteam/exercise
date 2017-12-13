@@ -7,17 +7,10 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Scanner;
-import java.util.Set;
-
-import org.junit.Test;
+import java.util.*;
 
 public class SocketNio {
 
-    @Test
     public void serverTest() throws IOException{
         
         Set<SocketChannel> channelSet = new HashSet<>();
@@ -68,7 +61,6 @@ public class SocketNio {
         
     }
     
-    @Test
     public void clientTest() throws IOException{
         
         SocketChannel channel = SocketChannel.open(new InetSocketAddress("127.0.0.1", 3044));
