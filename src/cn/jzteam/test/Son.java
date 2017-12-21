@@ -22,8 +22,21 @@ public class Son extends Parent {
     }
 
     public static void main(String[] args) {
-        Parent son = null;
-        son.test1();// invokestatic不需要实例
+
+//        String phone = Base64.getEncoder().encodeToString("18810246073".getBytes());
+//        String email = Base64.getEncoder().encodeToString("zhujizhi1012@163.com".getBytes());
+//        String userId = Base64.getEncoder().encodeToString("2006635".getBytes());
+//        System.out.println("phone="+phone+",email="+email);
+//        System.out.println("userId="+userId);
+
+        int s = (int)(Math.random()*26) + 65;
+//        System.out.println("a="+(int)'a');
+//        System.out.println("A="+(int)'A');
+        for(int i = 65;i<65+52;i++){
+
+            System.out.println("s="+i+", result="+(char)i);
+        }
+
     }
     
     public static void test1(){
