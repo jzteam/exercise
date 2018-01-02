@@ -4,6 +4,8 @@
         <dependency>cn.jzteam.test</dependency>
     </dependencies>
     <plugins>
-        <plugin>maven.plugin</plugin>
+        <plugin attr="test">maven.plugin</plugin>
+        <plugin attr="1">maven.plugin</plugin>
+        <plugin attr="2">maven.plugin</plugin>
     </plugins>
 </root>

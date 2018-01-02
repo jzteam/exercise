@@ -13,7 +13,20 @@ import java.util.List;
 public class XmlHandler {
 
     public static void main(String[] args) throws Exception {
-        createTestXml();
+//        createTestXml();
+        parseXmlByXpath();
+    }
+
+
+
+    private static void parseXmlByXpath() throws DocumentException {
+        SAXReader reader = new SAXReader();
+        Document document = reader.read("src/test.xml");
+        Element rootElement = document.getRootElement();
+        List list = rootElement.selectNodes("attribute::*");
+        list.forEach(x->{
+            System.out.println(x.toString());
+        });
     }
 
 
