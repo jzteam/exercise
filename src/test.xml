@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root selected="false">
+    <dependencies>
+        <dependency>cn.jzteam.test</dependency>
+    </dependencies>
+    <plugins>
+        <plugin>maven.plugin</plugin>
+    </plugins>
+</root>
