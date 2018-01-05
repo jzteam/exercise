@@ -7,6 +7,7 @@ import org.jboss.marshalling.MarshallingConfiguration;
 
 /**
  * 工具类：返回Jboss Marshalling编解码器
+ * 引用 jboss-marshalling-serial 包
  */
 public class MarshallingUtil {
 
@@ -28,7 +29,7 @@ public class MarshallingUtil {
         UnmarshallerProvider provider = new DefaultUnmarshallerProvider(marshallerFactory, configuration);
 
         // 构建Netty的MarshallingDecoder对象，俩个参数分别为provider和单个消息序列化后的最大长度
-        MarshallingDecoder decoder = new MarshallingDecoder(provider, 1024 * 1024);
+        MarshallingDecoder decoder = new MarshallingDecoder(provider, 3 * 1024 * 1024);
 
         return decoder;
     }

@@ -38,7 +38,6 @@ public class NettyTest {
     }
 
     public void openServer(int port){
-        System.out.println("开启服务器 "+port);
         EventLoopGroup bossGroup = new NioEventLoopGroup(); //用于处理服务器端接收客户端连接
         EventLoopGroup workerGroup = new NioEventLoopGroup(); //进行网络通信（读写）
         try {
@@ -66,19 +65,19 @@ public class NettyTest {
                      * 连接数并无影响，backlog影响的只是还没有被accept取出的连接
                      */
                     .option(ChannelOption.SO_BACKLOG, 1024) //设置TCP缓冲区
-                    .option(ChannelOption.SO_SNDBUF, 32 * 1024) //设置发送数据缓冲大小
-                    .option(ChannelOption.SO_RCVBUF, 32 * 1024) //设置接受数据缓冲大小
+                    .option(ChannelOption.SO_SNDBUF, 3 * 1024 * 1024) //设置发送数据缓冲大小
+                    .option(ChannelOption.SO_RCVBUF, 3 * 1024 * 1024) //设置接受数据缓冲大小
+                    .option(ChannelOption.TCP_NODELAY, true)
                     .childOption(ChannelOption.SO_KEEPALIVE, true); //保持连接
             ChannelFuture future = bootstrap.bind(port).sync();
+            System.out.println("服务器已开启 "+port);
             future.channel().closeFuture().sync();
-            System.out.println("server start ok");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
-        System.out.println("open server finish");
     }
 
     public void openClient() throws InterruptedException {
@@ -100,7 +99,6 @@ public class NettyTest {
     }
 
     public void openImageClient() throws InterruptedException {
-        System.out.println("开启客户端");
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(workerGroup)
@@ -116,10 +114,10 @@ public class NettyTest {
                 });
         ChannelFuture future = bootstrap.connect("127.0.0.1", 8888).sync();
 
-        System.out.println("connect success");
+        System.out.println("client connect success");
         try {
             // 组装Request
-            for (int i = 1; i <= 1; i++) {
+            for (int i = 1; i <= 5; i++) {
                 Request request = new Request();
                 request.setId(i + "");
                 request.setMessage("上传第" + i + "张图片");
@@ -131,8 +129,15 @@ public class NettyTest {
                 byte[] gzipData = GzipUtil.gzip(data);
                 request.setImg(gzipData);
                 future.channel().writeAndFlush(request);
-                future.channel().closeFuture().sync();
+
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    System.out.println("sleep over");
+                }
             }
+
+            future.channel().closeFuture().sync();
         }catch (Exception e){
             e.printStackTrace();
         }finally {
@@ -183,6 +188,7 @@ class ServerClassHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         try {
+
             // 获取Request
             Request request = (Request) msg;
             System.out.println("Server:" + request.getId() + "," + request.getMessage());
@@ -286,6 +292,7 @@ class Request implements Serializable {
 }
 
 class Response implements Serializable {
+    static final long serialVersionUID = 1L;
     private int code;
     private String msg;
 
