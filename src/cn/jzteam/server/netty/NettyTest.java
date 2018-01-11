@@ -1,4 +1,4 @@
-package cn.jzteam.core.socket;
+package cn.jzteam.server.netty;
 
 import cn.jzteam.utils.GzipUtil;
 import cn.jzteam.utils.MarshallingUtil;
