@@ -10,10 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -31,14 +28,6 @@ public class ExcelUtil {
 
     private static final String EXCEL_2007 = "xlsx";
     
-    public static void main(String[] args) throws Exception {
-    	
-    	String path = "/Users/oker/Documents/开发任务/批量汇款/xlsx_template/Australia_test.xlsx";
-    	List<Map<String, String>> list = readExcel(new FileInputStream(path), 0);
-    	list.forEach(System.out::println);
-    	
-	}
-
     /**
      * 从EXCEL表中获取数据信息
      * @param multipartFile
@@ -324,6 +313,74 @@ public class ExcelUtil {
             result.put("msg", "系统出现错误，请稍后再试！");
         }
         return result;
+    }
+
+
+    /**
+     * 在excel中取出一列，逗号隔开拼接成一行，输出到文件中
+     * @param inFilePath
+     * @param outFilePath
+     * @param startRowIndex
+     * @param colIndex
+     * @throws Exception
+     */
+    public static void handleForSql(String inFilePath,String outFilePath,int startRowIndex,int colIndex) throws Exception{
+
+        // 接受解析出的集合对象
+        StringBuilder sb = new StringBuilder();
+        // 声明一个工作簿
+        Workbook workbook = WorkbookFactory.create(new File(inFilePath));
+        // 获取当前Sheet页的工作表【只支持一个Sheet页】
+        Sheet sheet = workbook.getSheetAt(0);
+        // 获取工作表的总行数
+        int rowCount = sheet.getPhysicalNumberOfRows();
+        if (startRowIndex > rowCount) {
+            throw new RuntimeException("数据的起始行数超过了总行数，请检查！");
+        }
+        // 获取标题行
+        Row titleRow = sheet.getRow(0);
+        if (titleRow == null) {
+            throw new RuntimeException("标题行为空，请检查！");
+        }
+
+        // 获取总列数
+        int colCount = titleRow.getLastCellNum();
+        // 从第startRowIndex行开始，第1行是标题栏
+        for (int rowIndex = startRowIndex; rowIndex < rowCount; rowIndex++) {
+            try {
+                Row currentRow = sheet.getRow(rowIndex);
+                // 定义返回的数据：key：列数，从1 开始；object ：列对应的值 一个Map，一行数据
+                Map<String, String> rowMap = new HashMap<>();
+                // 空行标记
+                boolean isBlankRow = true;
+                // 读取每一列的信息
+                Cell cell = currentRow.getCell(colIndex);
+                if (cell == null) {
+                    // 空单元格，map中不存放
+                    continue;
+                }
+                // 单元格内容为空，也在Map中占一个位置
+                String cellValue = getCellValue(cell);
+                sb.append(cellValue).append(",");
+            } catch (RuntimeException e) {
+                catalinaLog.info(e.getMessage());
+            }
+        }
+        final FileOutputStream fos = new FileOutputStream(outFilePath);
+        final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+        bw.write(sb.toString());
+        bw.close();
+        System.out.println("写入完成");
+    }
+
+
+    public static void main(String[] args) throws Exception {
+
+//        String path = "/Users/oker/Documents/开发任务/批量汇款/xlsx_template/Australia_test.xlsx";
+//        List<Map<String, String>> list = readExcel(new FileInputStream(path), 0);
+//        list.forEach(System.out::println);
+        handleForSql("/Users/oker/Documents/work/14-other/发币统计/发币模板2018.1.15.xlsx","/Users/oker/Documents/work/14-other/发币统计/0115.txt",1,1);
+
     }
 
 }
