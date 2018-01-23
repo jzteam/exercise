@@ -1,5 +1,6 @@
 package cn.jzteam.tools.poi;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -361,6 +362,9 @@ public class ExcelUtil {
                 }
                 // 单元格内容为空，也在Map中占一个位置
                 String cellValue = getCellValue(cell);
+                if(StringUtils.isEmpty(cellValue)) {
+                    continue;
+                }
                 sb.append(cellValue).append(",");
             } catch (RuntimeException e) {
                 catalinaLog.info(e.getMessage());
@@ -379,7 +383,10 @@ public class ExcelUtil {
 //        String path = "/Users/oker/Documents/开发任务/批量汇款/xlsx_template/Australia_test.xlsx";
 //        List<Map<String, String>> list = readExcel(new FileInputStream(path), 0);
 //        list.forEach(System.out::println);
-        handleForSql("/Users/oker/Documents/work/14-other/发币统计/发币模板2018.1.15.xlsx","/Users/oker/Documents/work/14-other/发币统计/0115.txt",1,1);
+        String path = "/Users/oker/Documents/work/14-other/发币统计/";
+        String input = "0118_1.xlsx";
+        String output = "0118_1.txt";
+        handleForSql(path+input,path+output,1,0);
 
     }
 
