@@ -328,7 +328,7 @@ public class ExcelUtil {
     public static void handleForSql(String inFilePath,String outFilePath,int startRowIndex,int colIndex) throws Exception{
 
         // 接受解析出的集合对象
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("'");
         // 声明一个工作簿
         Workbook workbook = WorkbookFactory.create(new File(inFilePath));
         // 获取当前Sheet页的工作表【只支持一个Sheet页】
@@ -345,16 +345,13 @@ public class ExcelUtil {
         }
 
         // 获取总列数
-        int colCount = titleRow.getLastCellNum();
+        // int colCount = titleRow.getLastCellNum();
         // 从第startRowIndex行开始，第1行是标题栏
         for (int rowIndex = startRowIndex; rowIndex < rowCount; rowIndex++) {
             try {
                 Row currentRow = sheet.getRow(rowIndex);
-                // 定义返回的数据：key：列数，从1 开始；object ：列对应的值 一个Map，一行数据
-                Map<String, String> rowMap = new HashMap<>();
-                // 空行标记
-                boolean isBlankRow = true;
-                // 读取每一列的信息
+
+                // 读取指定列的信息
                 Cell cell = currentRow.getCell(colIndex);
                 if (cell == null) {
                     // 空单元格，map中不存放
@@ -365,7 +362,12 @@ public class ExcelUtil {
                 if(StringUtils.isEmpty(cellValue)) {
                     continue;
                 }
-                sb.append(cellValue).append(",");
+                sb.append(cellValue);
+                if(rowIndex + 1 == rowCount){
+                    sb.append("'");
+                }else{
+                    sb.append("','");
+                }
             } catch (RuntimeException e) {
                 catalinaLog.info(e.getMessage());
             }
@@ -384,8 +386,8 @@ public class ExcelUtil {
 //        List<Map<String, String>> list = readExcel(new FileInputStream(path), 0);
 //        list.forEach(System.out::println);
         String path = "/Users/oker/Documents/work/14-other/发币统计/";
-        String input = "0118_1.xlsx";
-        String output = "0118_1.txt";
+        String input = "012602.xlsx";
+        String output = "012602_result1.txt";
         handleForSql(path+input,path+output,1,0);
 
     }
