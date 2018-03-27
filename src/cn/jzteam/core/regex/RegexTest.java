@@ -7,7 +7,7 @@ public class RegexTest {
 	
 	public static void main(String[] args) {
 		
-		test1();
+		test2();
 		
 	}
 	
@@ -24,6 +24,12 @@ public class RegexTest {
 		String group3 = matcher.group(5);
 		
 		System.out.println(groupCount+"_"+group1+"_"+group2+"_"+group3);
+	}
+
+	private static void test2(){
+		final Pattern p = Pattern.compile("^[A-Za-z., ]+$");
+		final Matcher m = p.matcher("zhu,zhu");
+		System.out.println(m.matches());
 	}
 
 }
