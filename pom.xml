@@ -215,7 +215,24 @@
 			<version>3.3.1</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.netflix.feign</groupId>
+			<artifactId>feign-core</artifactId>
+			<version>8.18.0</version>
+			<scope>runtime</scope>
+		</dependency>
 
+		<!-- 工作测试 -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-feign</artifactId>
+			<version>1.4.4.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>com.okcoin.ucenter</groupId>
+			<artifactId>okcoin-users-dto</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 	</dependencies>
 

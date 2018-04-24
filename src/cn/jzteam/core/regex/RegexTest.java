@@ -1,5 +1,7 @@
 package cn.jzteam.core.regex;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -7,8 +9,20 @@ public class RegexTest {
 	
 	public static void main(String[] args) {
 		
-		test2();
-		
+		//test3();
+		Map<Long, String> map = new HashMap<>();
+		map.put(new Long(408834), "test1");
+		System.out.println(map.get(new Long(408834)));
+
+	}
+
+	private static void test3(){
+		Pattern CHANNEL_PATTERN = Pattern.compile("OKEX((-?)([A-Za-z0-9]+))?/", Pattern.CASE_INSENSITIVE);
+		String str = "OKEx-huaweihaiwai/1.7.0 (1605-A01; U; Android 6.0.1; zh-CN;)locale=zh-CN";
+		final Matcher match = CHANNEL_PATTERN.matcher(str);
+		if(match.find()){
+			System.out.println(match.group(3));
+		}
 	}
 	
 	private static void test1(){

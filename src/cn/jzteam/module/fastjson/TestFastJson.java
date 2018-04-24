@@ -1,26 +1,42 @@
 package cn.jzteam.module.fastjson;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
+import cn.jzteam.test.Person;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.ValueFilter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TestFastJson {
 	
 	public static void main(String[] args) {
 		
 		
-		for(int i = 0;i<50;i++){
-			int num = new Random().nextInt(100) * 100;
-			System.out.println("第"+i+"次：num="+num);
-			Map<String, Object> data = makeData(num);
-			test1(data);
-			test2(data);
-		}
-		
+//		for(int i = 0;i<50;i++){
+//			int num = new Random().nextInt(100) * 100;
+//			System.out.println("第"+i+"次：num="+num);
+//			Map<String, Object> data = makeData(num);
+//			test1(data);
+//			test2(data);
+//		}
+		test4();
+	}
+
+	private static void test4(){
+		final Person person = new Person();
+		person.setAge(1);
+		person.setName("jzteam");
+		final Object json = JSON.toJSON(person);
+		System.out.println(json.getClass().getSimpleName());
+		System.out.println(json);
+	}
+
+	public static void test3(){
+		final JSONObject kycInfo = JSON.parseObject("{\"unitNo\":\"\",\"storeyNo\":\"广安路9号院\",\"city\":\"丰台区\",\"companyName\":\"ZHONG LIANG BAO\",\"directors\":\"[123,345]\",\"formerCompanyName\":\"ZHONG LIANG BAO\",\"dateOfIncorporation\":1353859200000,\"companyNumber\":\"91110106057321892B\",\"shareMes\":\"[]\",\"roadAddress\":\"广安路9号院\",\"provice\":\"北京市\",\"localLanguageCompanyName\":\"中量宝（北京）科技有限公司\",\"postCode\":\"\"}");
+		final JSONArray directorsId = kycInfo.getJSONArray("unitNo");
+		System.out.println(directorsId);
 	}
 	
 	private static void test2(Map<String,Object> data){

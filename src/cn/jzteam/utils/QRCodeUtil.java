@@ -21,8 +21,11 @@ import java.util.Map;
 
 public class QRCodeUtil {
 
+    public final static String BASE64_HEAD = "data:image/png;base64,";
+
     /**
-     * 生成二维码
+     * 生成二维码图像，返回base64，包含文件头，默认大小200*200
+     *
      * @param content
      * @return
      */
@@ -32,7 +35,9 @@ public class QRCodeUtil {
     }
 
     /**
-     * 生成二维码图像，返回base64
+     * 生成二维码图像，返回base64，包含文件头。
+     * base64一行超过76字符会自动添加换行（win-\r\n;mac-\r;linux-\n），可以去掉换行符方便使用
+     *
      * @param content
      * @param width
      * @param height
@@ -53,7 +58,7 @@ public class QRCodeUtil {
             ImageIO.write(image, format, os);
             // 从流中获取数据数组
             byte b[] = os.toByteArray();
-            return new BASE64Encoder().encode(b);
+            return BASE64_HEAD + new BASE64Encoder().encode(b).replaceAll("\n", "");
         } catch (Exception e) {
             System.out.println("exception ...");
         }
@@ -61,11 +66,16 @@ public class QRCodeUtil {
     }
 
     /**
-     * 识别base64图片中的二维码
+     * 识别base64图片中的内容，自动去掉文件头
+     *
      * @param base64Str
      * @return
      */
     public static String parseFromBase64Str(String base64Str){
+        if(base64Str.startsWith("data:")){
+            // 包含文件头，先去掉文件头
+            base64Str = base64Str.substring(base64Str.indexOf(",")+1,base64Str.length());
+        }
         try {
             final byte[] bytes = new BASE64Decoder().decodeBuffer(base64Str);
             ByteArrayInputStream is = new ByteArrayInputStream(bytes);
@@ -86,7 +96,8 @@ public class QRCodeUtil {
     }
 
     /**
-     * 生成二维码，写入到文件中
+     * 生成二维码，写入到文件中，自动写入文件头"data:image/png;base64,"
+     *
      * @param filePath
      * @param content
      * @param width
@@ -112,6 +123,7 @@ public class QRCodeUtil {
 
     /**
      * 能识别图片中的二维码
+     *
      * @param filePath
      * @return
      */
@@ -135,15 +147,16 @@ public class QRCodeUtil {
 
     public static void main(String[] args) {
         String url = "https://www.binance.com/?ref=10926868";
-        String filePath = "/Users/oker/work/test/zxingtest.png";
-        String filePath1 = "/Users/oker/work/test/testzxing.png";
-//        String base64Str = generateToBase64Str(url);
-//        System.out.println("base64Str = "+base64Str);
-//        url= parseFromBase64Str(base64Str);
-//        System.out.println("解析得到：url="+url);
+        url = "https://api.megvii.com/faceid/lite/do";
+        String filePath = "/Users/oker/Documents/test/zxingtest.png";
+        String filePath1 = "/Users/oker/Documents/test/testzxing.png";
+        String base64Str = generateToBase64Str(url);
+        System.out.println("base64Str = "+base64Str);
+        //url= parseFromBase64Str(base64Str);
+        System.out.println("解析得到：url="+url);
 
-//        generateToFile(filePath,url,200,200);
-//        System.out.println("写入完成");
-        System.out.println("解析结果："+parseFromFile(filePath1));
+        //generateToFile(filePath,url,200,200);
+        System.out.println("写入完成");
+        System.out.println("解析结果："+parseFromFile(filePath));
     }
 }
