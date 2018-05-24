@@ -1,21 +1,12 @@
 package cn.jzteam.core.jdbc.druid;
 
+import com.alibaba.druid.pool.DruidDataSource;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
-
-import com.alibaba.druid.pool.DruidDataSource;
+import java.sql.*;
+import java.util.*;
 
 public class DruidPool {
 	
@@ -57,7 +48,8 @@ public class DruidPool {
 			dataSourceMap.put(MultipleDataSource.masterDataSource,masterDataSource);
 			dataSourceMap.put(MultipleDataSource.slaveDataSource,slaveDataSource);
 			multipleDataSource.setTargetDataSources(dataSourceMap);
-			
+
+			// 内部转化，把上面设置的初始参数转成可以使用的数据
 			multipleDataSource.afterPropertiesSet();
 			
 		} catch (FileNotFoundException e) {

@@ -1,4 +1,4 @@
-package cn.jzteam.core.dom4j;
+package cn.jzteam.core.xml;
 
 import cn.jzteam.test.Person;
 import org.dom4j.*;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XmlHandler {
+public class Dom4jTest {
 
     public static void main(String[] args) throws Exception {
 //        createTestXml();

@@ -5,8 +5,6 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -16,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +57,7 @@ public class QRCodeUtil {
             ImageIO.write(image, format, os);
             // 从流中获取数据数组
             byte b[] = os.toByteArray();
-            return BASE64_HEAD + new BASE64Encoder().encode(b).replaceAll("\n", "");
+            return BASE64_HEAD + new String(Base64.getEncoder().encode(b)).replaceAll("\n", "");
         } catch (Exception e) {
             System.out.println("exception ...");
         }
@@ -77,7 +76,7 @@ public class QRCodeUtil {
             base64Str = base64Str.substring(base64Str.indexOf(",")+1,base64Str.length());
         }
         try {
-            final byte[] bytes = new BASE64Decoder().decodeBuffer(base64Str);
+            final byte[] bytes = Base64.getDecoder().decode(base64Str);
             ByteArrayInputStream is = new ByteArrayInputStream(bytes);
             LuminanceSource source = new BufferedImageLuminanceSource(ImageIO.read(is));
             Binarizer binarizer = new HybridBinarizer(source);
