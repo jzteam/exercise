@@ -50,6 +50,7 @@ public class ImageUtil {
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, alpha));//设置水印文字透明度
         if (null != degree) {
             // 相对于原图，以左上角顶点为中心，将画布顺时针旋转degree度，旋转90度的时候，画布跟原图就没有交集了，水印是看不到的
+            // 文字倾斜是通过把整个画布旋转实现的，所以相对于画布，文字的横向排版还是朝着画布x轴正方向排版的
             g.rotate(Math.toRadians(degree));//设置水印旋转
         }
 
@@ -82,6 +83,48 @@ public class ImageUtil {
         g.dispose();
 
         return resultImg;
+    }
+
+    /**
+     * 没有角度的画图
+     * @param g
+     * @param rows
+     * @param cols
+     * @param stepLength
+     * @param text
+     */
+    private void draw01(Graphics2D g, int rows, int cols, int stepLength, String text){
+        System.out.println("stepLength="+stepLength + ", rows="+rows+", cols="+cols);
+        // 行决定y，列决定x
+        for(int i=0;i<rows+1;i++){
+            for(int j=0;j<cols;j++){
+                // 文字定位是以左下角的顶点来作为定位点的
+                final int xr = j * (stepLength + stepLength/2); // 列 决定 x轴位置
+                final int yr = i * stepLength + stepLength/2; // 行 决定 y轴位置（正向朝下），加上一个额外值，是为了让首行下移一些，不然看不见
+                // TODO xr和yr表示text的左下角顶点相对于画布的左上角顶点的坐标，x朝右为正方向，y朝下为正方向 !!!
+                g.drawString(text, xr, yr);
+            }
+        }
+    }
+
+    /**
+     * degree=45的画法
+     * 第一列要求各点在直线y=x上
+     * 第二列各点在直线y=x-stepLength上
+     * @param g
+     * @param rows
+     * @param cols
+     * @param stepLength
+     * @param text
+     */
+    private void draw02(Graphics2D g, int rows, int cols, int stepLength, String text){
+        System.out.println("stepLength="+stepLength + ", rows="+rows+", cols="+cols);
+        // 倾斜45度后总行数 rows + cols
+        int rowTotal = rows + cols;
+        for(int i=0;i< rowTotal+1 ;i++){
+            // TODO
+
+        }
     }
 
     public static void main(String[] args) {
