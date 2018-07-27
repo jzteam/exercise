@@ -49,6 +49,7 @@ public class ImageUtil {
         g.setFont(font);              //设置字体
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, alpha));//设置水印文字透明度
         if (null != degree) {
+            // 相对于原图，以左上角顶点为中心，将画布顺时针旋转degree度，旋转90度的时候，画布跟原图就没有交集了，水印是看不到的
             g.rotate(Math.toRadians(degree));//设置水印旋转
         }
 
@@ -64,17 +65,20 @@ public class ImageUtil {
         if(columnsNumber < 1){
             columnsNumber = 1;
         }
-//        for(int j=0;j<rowsNumber;j++){
-//            for(int i=0;i<columnsNumber;i++){
-//                final int xr = (i ) * width;
-//                final int yr = -(j)*width;
-//                System.out.println("j="+j+", i="+i+", x="+xr+", y="+yr);
-//                g.drawString(text, xr, yr);//画出水印,并设置水印位置
-//            }
-//        }
-        g.drawString(text, 0, 50);//画出水印,并设置水印位置
-
-        g.drawString(text, 0, 150);//画出水印,并设置水印位置
+        System.out.println("width="+width+", h="+imgHeight+", w="+imgWidth+", rowsNumber="+rowsNumber+", columnsNumber="+columnsNumber);
+        // 行决定y，列决定x
+        for(int i=0;i<rowsNumber+1;i++){
+            for(int j=0;j<columnsNumber;j++){
+                // 文字定位是以左下角的顶点来作为定位点的
+                final int xr = j * (width + width/2); // 列 决定 x轴位置
+                final int yr = i * width + width/2; // 行 决定 y轴位置（正向朝下），加上一个额外值，是为了让首行下移一些，不然看不见
+                System.out.println("x="+xr+", y="+yr);
+                // TODO xr和yr表示text的左下角顶点相对于画布的左上角顶点的坐标，x朝右为正方向，y朝下为正方向 !!!
+                g.drawString(text, xr, yr);
+            }
+        }
+//        g.drawString(text, 0, 50);//画出水印,并设置水印位置
+//        g.drawString(text, 0, 150);//画出水印,并设置水印位置
         g.dispose();
 
         return resultImg;
@@ -87,7 +91,7 @@ public class ImageUtil {
         final Color color = Color.WHITE;
 
         final long start = System.currentTimeMillis();
-        mark(src, out, " OKEX认证专用 ", font, color, 0.9f, 0);
+        mark(src, out, " OKEX认证专用 ", font, color, 0.9f, 80);
 
 
         System.out.println("处理完成，耗时：" + (System.currentTimeMillis() - start)  + "ms");
