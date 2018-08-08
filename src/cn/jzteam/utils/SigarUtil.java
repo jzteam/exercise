@@ -1,6 +1,7 @@
 package cn.jzteam.utils;
 
 import org.hyperic.sigar.CpuInfo;
+import org.hyperic.sigar.NetInfo;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 import org.springframework.core.io.ClassPathResource;
@@ -39,6 +40,8 @@ public class SigarUtil {
     public static void main(String[] args) {
         try {
             CpuInfo infos[] = sigar.getCpuInfoList();
+            final NetInfo netInfo = sigar.getNetInfo();
+            System.out.println("ip="+netInfo.getHostName());
             for (int i = 0; i < infos.length; i++) {// 不管是单块CPU还是多CPU都适用
                 CpuInfo info = infos[i];
                 System.out.println("mhz=" + info.getMhz());// CPU的总量MHz
