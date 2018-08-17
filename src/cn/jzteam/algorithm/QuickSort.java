@@ -24,9 +24,9 @@ public class QuickSort {
 
         // 无限循环找到 j和i 的位置
         while(true){
-            // 左边探索
+            // 左边探索：使用前减减是为了控制当条件不满足时，i还是当前这个值；i初始值是没有+1，是因为base就是start值，比对的值正好要取++之后的
             while(i<end && data[++i] <= base);
-            // 右边探索
+            // 右边探索：使用前减减是为了控制当条件不满足时，j还是当前这个值；j初始值是end+1，是为了让前减减也能拿到end这个值
             while(j>start && data[--j] >= base);
 
             if(j>i){
