@@ -44,8 +44,8 @@ public class PathPlanTest {
         routes[4][1] = "B";
         routes[5][0] = "A";
         routes[5][1] = "E";
-        routes[6][0] = "A";
-        routes[6][1] = "E";
+        routes[6][0] = "E";
+        routes[6][1] = "C";
         routes[7][0] = "D";
         routes[7][1] = "F";
 
