@@ -1,7 +1,7 @@
 package cn.jzteam.core.io;
 
 
-import java.io.File;
+import java.io.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -43,6 +43,38 @@ public class FileUtils {
 				System.out.println("desc1: " + desc1);
 				multiThreadCopy(src+"/"+path, desc1);
 			}
+		}
+	}
+
+	/**
+	 * 计算文件大小
+	 * @param file
+	 * @return
+	 */
+	public static long sizeOf(File file){
+		try(FileInputStream fis = new FileInputStream(file)){
+			return fis.available();
+		}catch (IOException e){
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	/**
+	 * 把文件内容逐行拼接成字符串
+	 * @param file
+	 * @return
+	 */
+	public static String readFileToString(File file){
+		StringBuilder sb = new StringBuilder();
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"))){
+			String line;
+			while((line = br.readLine()) != null)
+				sb.append(line).append("\n");
+			return sb.toString();
+		}catch (IOException e){
+			e.printStackTrace();
+			return "";
 		}
 	}
 
