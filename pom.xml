@@ -8,6 +8,9 @@
 	<name>测试</name>
 	<description>测试</description>
 
+	<properties>
+		<lc.file.includes>java,txt</lc.file.includes>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -278,6 +281,30 @@
 			  <warSourceDirectory>WebContent</warSourceDirectory>
 			  <failOnMissingWebXml>false</failOnMissingWebXml>
 			</configuration>
+		  </plugin>
+
+		  <plugin>
+			<groupId>cn.jzteam.maven</groupId>
+			<artifactId>maven-plugin</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<executions>
+				<execution>
+					<id>lc</id>
+					<phase>verify</phase>
+					<goals>
+						<goal>lc</goal>
+					</goals>
+					<configuration>
+						<includes>
+							<include>java</include>
+							<include>lua</include>
+							<include>json</include>
+							<include>xml</include>
+							<include>properties</include>
+						</includes>
+					</configuration>
+				</execution>
+			</executions>
 		  </plugin>
 		</plugins>
 	</build>
