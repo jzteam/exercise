@@ -2,6 +2,9 @@ package cn.jzteam.core.thread;
 
 public class ThreadTest {
 
+    /**
+     * 测试 githistory 会发生什么
+     */
     static class MyTask implements Runnable{
         private Object lockA = null;
         private Object lockB = null;
