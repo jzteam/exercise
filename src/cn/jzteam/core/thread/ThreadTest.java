@@ -43,6 +43,8 @@ public class ThreadTest {
         new Thread(new MyTask(lock1,lock3,"A")).start();
         new Thread(new MyTask(lock2,lock1,"B")).start();
         new Thread(new MyTask(lock3,lock2,"C")).start();
-
+        
+        // 测试 githistory
+        System.out.println("test");
     }
 }
