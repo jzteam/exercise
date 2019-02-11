@@ -18,6 +18,9 @@ public class ThreadTest {
         @Override
         public void run() {
             // TODO Auto-generated method stub
+
+            System.out.println("start");
+            
             for(int i=0;i<10;i++) {
                 synchronized(lockA) {
 
