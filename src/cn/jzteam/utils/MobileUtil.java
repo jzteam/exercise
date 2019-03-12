@@ -1,6 +1,8 @@
 package cn.jzteam.utils;
 
-import org.apache.commons.lang3.StringUtils;
+import com.alibaba.druid.util.StringUtils;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,8 +23,23 @@ public class MobileUtil {
         }
     }
 
+    public static boolean isMobileByGoogle(int mobile, int areaCode) {
+        final PhoneNumber pn = new PhoneNumber();
+        pn.setCountryCode(areaCode);
+        pn.setNationalNumber(mobile);
+
+        return PhoneNumberUtil.getInstance().isValidNumber(pn);
+    }
+
     public static void main(String[] args) {
-        System.out.println(isMobile("19953817118"));
-        System.out.println(isMobile("+9999123456"));
+
+        final PhoneNumber pn = new PhoneNumber();
+        pn.setCountryCode(86);
+        pn.setNationalNumber(19110246073L);
+
+        final boolean mark = PhoneNumberUtil.getInstance().isValidNumber(pn);
+        System.out.println("mark="+mark);
+//        System.out.println(isMobile("19953817118"));
+//        System.out.println(isMobile("+9999123456"));
     }
 }

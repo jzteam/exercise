@@ -258,8 +258,13 @@
 			<artifactId>lucene-highlighter</artifactId>
 			<version>7.5.0</version>
 		</dependency>
-
-
+		
+		<!-- 谷歌手机号校验 -->
+		<dependency>
+			<groupId>com.googlecode.libphonenumber</groupId>
+			<artifactId>libphonenumber</artifactId>
+			<version>8.10.7</version>
+		</dependency>
 
 	</dependencies>
 
