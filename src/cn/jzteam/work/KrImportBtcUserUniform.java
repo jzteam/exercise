@@ -29,17 +29,26 @@ public class KrImportBtcUserUniform {
         for(int i=2;i<maps.size();i++){
             Map<String,String> map = maps.get(i);
             // 原始数据
-            final Long kyUserId = Long.valueOf(map.get("1")); // userId
+            final Long krUserId = Long.valueOf(map.get("1")); // userId
             final String email = map.get("2"); // email
             final String realName = map.get("3"); // real_name
             final String phone = map.get("4"); // phone
-            final String totpEncrypt = map.get("5"); // totp_encrypt
+            final String toptEncrypt = map.get("5"); // totp_encrypt
             final String createdDate = map.get("6"); // created_date
             final String updateTime = map.get("7"); // update_time
-            if(kyUserId == null){
+            if(krUserId == null){
                 System.out.println("userId为空，放弃整行");
                 continue;
             }
+            
+            StringBuilder origin = new StringBuilder();
+            origin.append("-- ").append("userId:").append(krUserId)
+                    .append(", email:").append(email)
+                    .append(", phone:").append(phone)
+                    .append(", toptEncrypt:").append(toptEncrypt)
+                    .append(", realName:").append(realName)
+                    .append(", createdDate:").append(createdDate)
+                    .append(", updateTime:").append(updateTime);
             
             // 入库数据
             final String newEmail = email; 
@@ -47,7 +56,7 @@ public class KrImportBtcUserUniform {
             final String newRealName = realName; 
             final String newNickName = WorkUtil.convertNickNme(phone); 
             final String newLoginPwdEncrypt = UUID.randomUUID().toString().replaceAll("-", ""); 
-            final String newToptEncrypt = totpEncrypt; // TODO 加密解密
+            final String newToptEncrypt = toptEncrypt; // TODO 解密加密
             int newAuthTrade; // 手机google验证开关，绑定即打开。韩国站都是手机注册，但也有解绑的可能
             if(StringUtils.isEmpty(phone) && StringUtils.isEmpty(newToptEncrypt)){
                 newAuthTrade = 0;
@@ -58,8 +67,8 @@ public class KrImportBtcUserUniform {
             }
             final int newEmailValidateFlag = StringUtils.isEmpty(newEmail) ? 1 : 0; // 验证邮箱
 
-            StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO `btc_user_uniform` (" +
+            StringBuilder sql = new StringBuilder();
+            sql.append("INSERT INTO `btc_user_uniform` (" +
                     "`email`, `phone`, `real_name`, `nick_name`, " +
                     "`id_number`, `passport_num`, `passport_name`, " +
                     "`login_pwd`, `login_pwd_encrypt`, `trade_pwd`, `trade_pwd_encrypt`, `totp_encrypt`, `pwd_flag`, " +
@@ -75,8 +84,12 @@ public class KrImportBtcUserUniform {
                     .append("-1, -1, 0, ")
                     .append("0,").append(newAuthTrade).append(", ").append(newEmailValidateFlag).append(", 0, NULL, ")
                     .append("'").append(updateTime).append("', NULL, 0, 0, 89").append(");");
-            System.out.println(sb.toString());
-            bw.write(sb.toString());
+            System.out.println(sql.toString());
+            // 注释：原始数据
+            bw.write(origin.toString());
+            bw.newLine();
+            // sql：入库数据
+            bw.write(sql.toString());
             bw.newLine();
         }
 
