@@ -23,6 +23,9 @@ public class KrImportBtcUserUniform {
             System.out.println("查询为空");
             return;
         }
+        
+//        // 过滤掉test已经存在用户
+//        String excludes = ",7561409,7561567,7561569,7561833,7595495,7607933,7610749,";
 
         String descPath = "/Users/oker/Documents/work/2019/0424-韩国站/用户迁移/import_result01.sql";
         final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(descPath)));
@@ -41,6 +44,10 @@ public class KrImportBtcUserUniform {
                 System.out.println("userId为空，放弃整行");
                 continue;
             }
+//            if(excludes.contains(","+krUserId+",")){
+//                System.out.println("userId exclude，放弃整行");
+//                continue;
+//            }
             
             StringBuilder origin = new StringBuilder();
             origin.append("-- ").append("userId:").append(krUserId)
@@ -74,22 +81,30 @@ public class KrImportBtcUserUniform {
             }
 
             StringBuilder sql = new StringBuilder();
-            if(i == 2 || i % num == 0) {
-                if(i > 2) {
-                    bw.newLine();
-                    bw.newLine();
-                }
-                
-                // 每10000行写一次表名
-                sql.append("INSERT INTO `btc_user_uniform` (`email`, `phone`, `real_name`, `nick_name`, " +
-                        "`id_number`, `passport_num`, `passport_name`, " +
-                        "`login_pwd`, `login_pwd_encrypt`, `trade_pwd`, `trade_pwd_encrypt`, `totp_encrypt`, `pwd_flag`, " +
-                        "`version`, `delete_flag`, `master_account_id`, `user_from`, `from`, `channel_id`, `area_code`, `created_date`, " +
-                        "`wallet_user_id`, `com_user_id`, `conflict_flag`, " +
-                        "`auth_login`, `auth_trade`, `email_validate_flag`, `trade_pwd_flag`, `email_verify`, " +
-                        "`update_time`, `remark`, `first_from`, `deleted`, `broker_id`)" +
-                        "VALUES \n");
-            }
+            sql.append("INSERT INTO `btc_user_uniform` (`email`, `phone`, `real_name`, `nick_name`, " +
+                    "`id_number`, `passport_num`, `passport_name`, " +
+                    "`login_pwd`, `login_pwd_encrypt`, `trade_pwd`, `trade_pwd_encrypt`, `totp_encrypt`, `pwd_flag`, " +
+                    "`version`, `delete_flag`, `master_account_id`, `user_from`, `from`, `channel_id`, `area_code`, `created_date`, " +
+                    "`wallet_user_id`, `com_user_id`, `conflict_flag`, " +
+                    "`auth_login`, `auth_trade`, `email_validate_flag`, `trade_pwd_flag`, `email_verify`, " +
+                    "`update_time`, `remark`, `first_from`, `deleted`, `broker_id`)" +
+                    " VALUES ");
+//            if(i == 2) { //   || i % num == 0
+////                if(i > 2) {
+////                    bw.newLine();
+////                    bw.newLine();
+////                }
+//                
+//                // 每10000行写一次表名
+//                sql.append("INSERT INTO `btc_user_uniform` (`email`, `phone`, `real_name`, `nick_name`, " +
+//                        "`id_number`, `passport_num`, `passport_name`, " +
+//                        "`login_pwd`, `login_pwd_encrypt`, `trade_pwd`, `trade_pwd_encrypt`, `totp_encrypt`, `pwd_flag`, " +
+//                        "`version`, `delete_flag`, `master_account_id`, `user_from`, `from`, `channel_id`, `area_code`, `created_date`, " +
+//                        "`wallet_user_id`, `com_user_id`, `conflict_flag`, " +
+//                        "`auth_login`, `auth_trade`, `email_validate_flag`, `trade_pwd_flag`, `email_verify`, " +
+//                        "`update_time`, `remark`, `first_from`, `deleted`, `broker_id`)" +
+//                        "VALUES \n");
+//            }
             sql.append("(");
             if(StringUtils.isNotBlank(newEmail)){
                 sql.append("'").append(newEmail).append("', ");
@@ -108,12 +123,12 @@ public class KrImportBtcUserUniform {
                     .append("0, 0, 0, 0, 4, 0, '82', '").append(createdDate).append("', ")
                     .append("-1, -1, 0, ")
                     .append("0,").append(newAuthTrade).append(", ").append(newEmailValidateFlag).append(", 0, NULL, ")
-                    .append("'").append(updateTime).append("', 'kr import', 0, 0, 89").append(")");
-            if(i % num == num - 1 || i == maps.size() - 1){
-                sql.append(";");
-            } else {
-                sql.append(",");
-            }
+                    .append("'").append(updateTime).append("', 'kr import', 0, 0, 89").append(");");
+//            if(i == maps.size() - 1){ // i % num == num - 1 || 
+//                sql.append(";");
+//            } else {
+//                sql.append(",");
+//            }
             
             System.out.println(sql.toString());
             // 注释：原始数据
