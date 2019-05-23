@@ -16,15 +16,15 @@ import java.util.UUID;
 public class KrImportBtcUserUniform {
 
     public static void main(String[] args) throws Exception {
-        String srcPath = "/Users/oker/Documents/work/2019/0424-韩国站/用户迁移/test.xlsx";
+        String srcPath = "/Users/oker/Documents/work/2019/0424-韩国站/用户迁移/auth01.xlsx";
         final FileInputStream in = new FileInputStream(srcPath);
-        final List<Map<String, String>> maps = ExcelUtil.readExcel(in, 0);
+        final List<Map<String, String>> maps = ExcelUtil.readExcel(in, 0, 1);
         if(CollectionUtils.isEmpty(maps)){
             System.out.println("查询为空");
             return;
         }
 
-        String descPath = "/Users/oker/Documents/work/2019/0424-韩国站/用户迁移/import_1.sql";
+        String descPath = "/Users/oker/Documents/work/2019/0424-韩国站/用户迁移/import_result.sql";
         final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(descPath)));
         for(int i=2;i<maps.size();i++){
             Map<String,String> map = maps.get(i);
@@ -51,12 +51,12 @@ public class KrImportBtcUserUniform {
                     .append(", updateTime:").append(updateTime);
             
             // 入库数据
-            final String newEmail = email; 
-            final String newPhone = phone; 
+            final String newEmail = StringUtils.isBlank(email) ? null : email; // email 不能为空串
+            final String newPhone = StringUtils.isBlank(phone) ? null : phone; // phone 不能为空串
             final String newRealName = realName; 
             final String newNickName = WorkUtil.convertNickNme(phone); 
             final String newLoginPwdEncrypt = UUID.randomUUID().toString().replaceAll("-", ""); 
-            final String newToptEncrypt = toptEncrypt; // TODO 解密加密
+            final String newToptEncrypt = toptEncrypt; // 解密加密，跟我们一样的密钥，不用处理
             int newAuthTrade; // 手机google验证开关，绑定即打开。韩国站都是手机注册，但也有解绑的可能
             if(StringUtils.isEmpty(phone) && StringUtils.isEmpty(newToptEncrypt)){
                 newAuthTrade = 0;
@@ -66,10 +66,21 @@ public class KrImportBtcUserUniform {
                 newAuthTrade = 2;
             }
             final int newEmailValidateFlag = StringUtils.isEmpty(newEmail) ? 1 : 0; // 验证邮箱
+            
+            if(StringUtils.isBlank(email) && StringUtils.isBlank(phone)){
+                System.out.println("email和phone都为空，放弃整行");
+                continue;
+            }
 
             StringBuilder sql = new StringBuilder();
-            sql.append("INSERT INTO `btc_user_uniform` (" +
-                    "`email`, `phone`, `real_name`, `nick_name`, " +
+            sql.append("INSERT INTO `btc_user_uniform` (");
+            if(StringUtils.isNotBlank(newEmail)) {
+                sql.append("`email`, ");
+            }
+            if(StringUtils.isNotBlank(newPhone)) {
+                sql.append("`phone`, ");
+            }
+            sql.append("`real_name`, `nick_name`, " +
                     "`id_number`, `passport_num`, `passport_name`, " +
                     "`login_pwd`, `login_pwd_encrypt`, `trade_pwd`, `trade_pwd_encrypt`, `totp_encrypt`, `pwd_flag`, " +
                     "`version`, `delete_flag`, `master_account_id`, `user_from`, `from`, `channel_id`, `area_code`, `created_date`, " +
@@ -77,13 +88,20 @@ public class KrImportBtcUserUniform {
                     "`auth_login`, `auth_trade`, `email_validate_flag`, `trade_pwd_flag`, `email_verify`, " +
                     "`update_time`, `remark`, `first_from`, `deleted`, `broker_id`)" +
                     "VALUES (")
-                    .append("'").append(newEmail).append("', '").append(newPhone).append("','").append(newRealName).append("','").append(newNickName).append("', ")
+                    .append("'");
+            if(StringUtils.isNotBlank(newEmail)) {
+                sql.append(newEmail).append("', '");
+            }
+            if(StringUtils.isNotBlank(newPhone)) {
+                sql.append(newPhone).append("','");
+            }
+            sql.append(newRealName).append("','").append(newNickName).append("', ")
                     .append("NULL, NULL, NULL, ")
                     .append("'','").append(newLoginPwdEncrypt).append("','','','").append(newToptEncrypt).append("', 1, ")
                     .append("0, 0, 0, 0, 4, 0, '82', '").append(createdDate).append("', ")
                     .append("-1, -1, 0, ")
                     .append("0,").append(newAuthTrade).append(", ").append(newEmailValidateFlag).append(", 0, NULL, ")
-                    .append("'").append(updateTime).append("', NULL, 0, 0, 89").append(");");
+                    .append("'").append(updateTime).append("', 'kr import', 0, 0, 89").append(");");
             System.out.println(sql.toString());
             // 注释：原始数据
             bw.write(origin.toString());
