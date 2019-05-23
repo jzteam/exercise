@@ -24,8 +24,9 @@ public class KrImportBtcUserUniform {
             return;
         }
 
-        String descPath = "/Users/oker/Documents/work/2019/0424-韩国站/用户迁移/import_result.sql";
+        String descPath = "/Users/oker/Documents/work/2019/0424-韩国站/用户迁移/import_result01.sql";
         final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(descPath)));
+        int num = 10000;
         for(int i=2;i<maps.size();i++){
             Map<String,String> map = maps.get(i);
             // 原始数据
@@ -65,7 +66,7 @@ public class KrImportBtcUserUniform {
             } else {
                 newAuthTrade = 2;
             }
-            final int newEmailValidateFlag = StringUtils.isEmpty(newEmail) ? 1 : 0; // 验证邮箱
+            final int newEmailValidateFlag = StringUtils.isEmpty(newEmail) ? 0 : 1; // 验证邮箱
             
             if(StringUtils.isBlank(email) && StringUtils.isBlank(phone)){
                 System.out.println("email和phone都为空，放弃整行");
@@ -73,39 +74,51 @@ public class KrImportBtcUserUniform {
             }
 
             StringBuilder sql = new StringBuilder();
-            sql.append("INSERT INTO `btc_user_uniform` (");
-            if(StringUtils.isNotBlank(newEmail)) {
-                sql.append("`email`, ");
+            if(i == 2 || i % num == 0) {
+                if(i > 2) {
+                    bw.newLine();
+                    bw.newLine();
+                }
+                
+                // 每10000行写一次表名
+                sql.append("INSERT INTO `btc_user_uniform` (`email`, `phone`, `real_name`, `nick_name`, " +
+                        "`id_number`, `passport_num`, `passport_name`, " +
+                        "`login_pwd`, `login_pwd_encrypt`, `trade_pwd`, `trade_pwd_encrypt`, `totp_encrypt`, `pwd_flag`, " +
+                        "`version`, `delete_flag`, `master_account_id`, `user_from`, `from`, `channel_id`, `area_code`, `created_date`, " +
+                        "`wallet_user_id`, `com_user_id`, `conflict_flag`, " +
+                        "`auth_login`, `auth_trade`, `email_validate_flag`, `trade_pwd_flag`, `email_verify`, " +
+                        "`update_time`, `remark`, `first_from`, `deleted`, `broker_id`)" +
+                        "VALUES \n");
             }
-            if(StringUtils.isNotBlank(newPhone)) {
-                sql.append("`phone`, ");
+            sql.append("(");
+            if(StringUtils.isNotBlank(newEmail)){
+                sql.append("'").append(newEmail).append("', ");
+            }else {
+                sql.append("NULL, ");
             }
-            sql.append("`real_name`, `nick_name`, " +
-                    "`id_number`, `passport_num`, `passport_name`, " +
-                    "`login_pwd`, `login_pwd_encrypt`, `trade_pwd`, `trade_pwd_encrypt`, `totp_encrypt`, `pwd_flag`, " +
-                    "`version`, `delete_flag`, `master_account_id`, `user_from`, `from`, `channel_id`, `area_code`, `created_date`, " +
-                    "`wallet_user_id`, `com_user_id`, `conflict_flag`, " +
-                    "`auth_login`, `auth_trade`, `email_validate_flag`, `trade_pwd_flag`, `email_verify`, " +
-                    "`update_time`, `remark`, `first_from`, `deleted`, `broker_id`)" +
-                    "VALUES (")
-                    .append("'");
-            if(StringUtils.isNotBlank(newEmail)) {
-                sql.append(newEmail).append("', '");
+            if(StringUtils.isNotBlank(newPhone)){
+                sql.append("'").append(newPhone).append("', ");
+            }else{
+                sql.append("NULL, ");
             }
-            if(StringUtils.isNotBlank(newPhone)) {
-                sql.append(newPhone).append("','");
-            }
+            sql.append("'");
             sql.append(newRealName).append("','").append(newNickName).append("', ")
                     .append("NULL, NULL, NULL, ")
                     .append("'','").append(newLoginPwdEncrypt).append("','','','").append(newToptEncrypt).append("', 1, ")
                     .append("0, 0, 0, 0, 4, 0, '82', '").append(createdDate).append("', ")
                     .append("-1, -1, 0, ")
                     .append("0,").append(newAuthTrade).append(", ").append(newEmailValidateFlag).append(", 0, NULL, ")
-                    .append("'").append(updateTime).append("', 'kr import', 0, 0, 89").append(");");
+                    .append("'").append(updateTime).append("', 'kr import', 0, 0, 89").append(")");
+            if(i % num == num - 1 || i == maps.size() - 1){
+                sql.append(";");
+            } else {
+                sql.append(",");
+            }
+            
             System.out.println(sql.toString());
             // 注释：原始数据
-            bw.write(origin.toString());
-            bw.newLine();
+            // bw.write(origin.toString());
+            // bw.newLine();
             // sql：入库数据
             bw.write(sql.toString());
             bw.newLine();
