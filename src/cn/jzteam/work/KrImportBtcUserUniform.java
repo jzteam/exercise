@@ -16,9 +16,9 @@ import java.util.UUID;
 public class KrImportBtcUserUniform {
 
     public static void main(String[] args) throws Exception {
-        String srcPath = "/Users/oker/Documents/work/2019/0424-韩国站/用户迁移/auth01.xlsx";
+        String srcPath = "/Users/oker/Documents/work/2019/0424-韩国站/用户迁移/auth_incr20190617.xlsx";
         final FileInputStream in = new FileInputStream(srcPath);
-        final List<Map<String, String>> maps = ExcelUtil.readExcel(in, 0, 1);
+        final List<Map<String, String>> maps = ExcelUtil.readExcel(in, 0, 0);
         if(CollectionUtils.isEmpty(maps)){
             System.out.println("查询为空");
             return;
@@ -27,7 +27,7 @@ public class KrImportBtcUserUniform {
 //        // 过滤掉test已经存在用户
 //        String excludes = ",7561409,7561567,7561569,7561833,7595495,7607933,7610749,";
 
-        String descPath = "/Users/oker/Documents/work/2019/0424-韩国站/用户迁移/import_result01.sql";
+        String descPath = "/Users/oker/Documents/work/2019/0424-韩国站/用户迁移/import_result0617.sql";
         final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(descPath)));
         int num = 10000;
         for(int i=2;i<maps.size();i++){
