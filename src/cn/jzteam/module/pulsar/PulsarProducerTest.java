@@ -1,9 +1,8 @@
 package cn.jzteam.module.pulsar;
 
-import com.alibaba.fastjson.JSON;
-import org.apache.pulsar.client.api.*;
-
-import java.util.concurrent.TimeUnit;
+import org.apache.pulsar.client.api.Producer;
+import org.apache.pulsar.client.api.PulsarClient;
+import org.apache.pulsar.client.api.Schema;
 
 public class PulsarProducerTest {
 
