@@ -56,6 +56,10 @@ public class ExcelUtil {
         return readExcel(multipartFile.getInputStream(),startRowIndex);
     }
 
+    public static List<Map<String, String>> readExcel(InputStream in,int startRowIndex) throws Exception{
+        return readExcel(in, startRowIndex, 0);
+    }
+
     /**
      * 读取excel到list，每一行对应一个Map<列序号，内容>，列序号从"1"开始
      * 注：公式被被输出成公式String，而不是公式的值
@@ -63,13 +67,13 @@ public class ExcelUtil {
      * @param startRowIndex
      * @return
      */
-	public static List<Map<String, String>> readExcel(InputStream in,int startRowIndex) throws Exception{
+	public static List<Map<String, String>> readExcel(InputStream in,int startRowIndex, int sheetIndex) throws Exception{
     	// 接受解析出的集合对象
         List<Map<String, String>> dataList = new ArrayList<Map<String,String>>();
         // 声明一个工作簿
         Workbook workbook = WorkbookFactory.create(in);
         // 获取当前Sheet页的工作表【只支持一个Sheet页】
-        Sheet sheet = workbook.getSheetAt(0);
+        Sheet sheet = workbook.getSheetAt(sheetIndex);
         // 获取工作表的总行数
         int rowCount = sheet.getPhysicalNumberOfRows();
         if (startRowIndex > rowCount) {

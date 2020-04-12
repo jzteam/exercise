@@ -8,6 +8,9 @@
 	<name>测试</name>
 	<description>测试</description>
 
+	<properties>
+		<lc.file.includes>java,txt</lc.file.includes>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -234,6 +237,47 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
+		<!-- lucene -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>7.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<version>7.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>7.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-highlighter</artifactId>
+			<version>7.5.0</version>
+		</dependency>
+		
+		<!-- 谷歌手机号校验 -->
+		<dependency>
+			<groupId>com.googlecode.libphonenumber</groupId>
+			<artifactId>libphonenumber</artifactId>
+			<version>8.10.7</version>
+		</dependency>
+		
+		<!-- netty 实战 -->
+		<!--<dependency>-->
+			<!--<groupId>io.netty</groupId>-->
+			<!--<artifactId>netty-all</artifactId>-->
+			<!--<version>4.1.38.Final</version>-->
+		<!--</dependency>-->
+        <dependency>
+            <groupId>org.apache.pulsar</groupId>
+            <artifactId>pulsar-client</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+
 	</dependencies>
 
 	<build>
@@ -254,6 +298,30 @@
 			  <warSourceDirectory>WebContent</warSourceDirectory>
 			  <failOnMissingWebXml>false</failOnMissingWebXml>
 			</configuration>
+		  </plugin>
+
+		  <plugin>
+			<groupId>cn.jzteam.maven</groupId>
+			<artifactId>maven-plugin</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<executions>
+				<execution>
+					<id>lc</id>
+					<phase>verify</phase>
+					<goals>
+						<goal>lc</goal>
+					</goals>
+					<configuration>
+						<includes>
+							<include>java</include>
+							<include>lua</include>
+							<include>json</include>
+							<include>xml</include>
+							<include>properties</include>
+						</includes>
+					</configuration>
+				</execution>
+			</executions>
 		  </plugin>
 		</plugins>
 	</build>
