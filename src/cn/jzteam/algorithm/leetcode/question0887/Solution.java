@@ -2,28 +2,34 @@ package cn.jzteam.algorithm.leetcode.question0887;
 
 public class Solution {
     public static int superEggDrop(int K, int N) {
-        // 先留下2个鸡蛋，其余的都用来折半削减楼层高度
-        int res = N;
-        int times = 0;
-        if (K > 2) {
-            int limit = K - 2;
-            while (limit-- > 0 && res >= 3) {
-                res = res / 2; // 保证res>=1
-                times++;
-            }
+        // 设 K 个鸡蛋，T 次移动，能测试的楼层高度最大为 f(K, T)
+        // 扔一个鸡蛋之后，碎了则还能往下测试的最大高度为 f(K-1, T-1)
+        // 没有碎则还能往上测试的最大高度为 f(K, T-1)
+        // f(K, T) = 1 + f(K-1, T-1) + f(K, T-1)
+        // 边界条件：f(1, T) = T，f(K, 1) = 1，T<=N
+        // N = f(K, T) 的最大值，可以暴力尝试所有T值（1<=T<=N）
+        int[][] f = new int[K+1][N+1];
+        int min = N;
+        // 先把边界条件设置好
+        for (int k = 1; k <= K; k++) {
+            f[k][1] = 1;
         }
-        if (K >= 2) {
-            // 用两个鸡蛋测试剩余楼层 n(n+1)/2 >= res
-            for (int i = 1; i<=res; i++) {
-                if (i * (i + 1) / 2 >= res) {
-                    return i + times;
+        // t表示次数，最少次数已经满足 >=N，即可直接返回了
+        for (int t = 2; t <= N; t++) {
+            for (int k = 1; k <= K; k++) {
+                if (k == 1) {
+                    f[k][t] = t;
+                } else {
+                    f[k][t] = 1 + f[k - 1][t - 1] + f[k][t - 1];
                 }
             }
-        } else {
-            return N;
+            // k表示鸡蛋个数，k<=K的所有可能都已经尝试过了，直接使用K来取值即可（次数固定，鸡蛋再多也不能增加高度了）
+            if (f[K][t] >= N && t < min) {
+                min = t;
+                break;
+            }
         }
-
-        return 0;
+        return min;
     }
 
     public static void main(String[] args) {
