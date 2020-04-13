@@ -19,6 +19,11 @@ package cn.jzteam.algorithm.leetcode.question0002;
  * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
  */
 class Solution {
+    /*
+        按照链表顺序从头开始，每次都相加两个链节的值，直到其中一个链表结束。
+        每次相加都通过一个标记位来判断是否有进位，直到没有进位或者链表结束。
+        如果链表还有长度，则直接把此后所有链节复制过来。
+     */
     public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
         ListNode head = null;
         ListNode temp = null;

@@ -25,8 +25,10 @@ package cn.jzteam.algorithm.leetcode.question0004;
  * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
  */
 public class Solution {
+    /*
+        两个数组各设置一个游标，从游标取值比较，较小值处的游标+1，循环比较直到两个游标相加大于数组长度之和的一半
+     */
     public static double findMedianSortedArrays(int[] nums1, int[] nums2) {
-
         int midIndex = (nums1.length + nums2.length) / 2;
         boolean isEven = (nums1.length + nums2.length) % 2 == 0;
         if (isEven) {

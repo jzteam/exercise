@@ -25,6 +25,9 @@ package cn.jzteam.algorithm.leetcode.question0003;
  * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
  */
 public class Solution {
+    /*
+        从头开始检索，只要发现重复，就起点设置到 起点之后的第一个重复字符，继续检索
+     */
     public static int lengthOfLongestSubstring(String s) {
         // 一旦出现重复就要从（pre + 1）重新开始计算，直到终点
         int max = 0;
