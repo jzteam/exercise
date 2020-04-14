@@ -110,15 +110,20 @@ public class Solution {
 
     // 最长公共子串
     public static String longestPalindrome3(String s) {
+        // TODO
+
 
         return "";
     }
 
     public static void main(String[] args) {
-        System.out.println(longestPalindrome1(""));
-        System.out.println(longestPalindrome1("a"));
-        System.out.println(longestPalindrome2("aaaaaa"));
-        System.out.println(longestPalindrome2("aba"));
+        System.out.println(longestPalindrome3(""));
+        System.out.println(longestPalindrome3("a"));
+//        System.out.println(longestPalindrome2("aaaaaa"));
+//        System.out.println(longestPalindrome2("aba"));
+        System.out.println(longestPalindrome3("aaba"));
+        System.out.println(longestPalindrome3("aaaaaa"));
+
     }
 
 }
