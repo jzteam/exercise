@@ -59,7 +59,7 @@ public class ClientWithResponseHandler {
      */
     public static void test2() throws Exception{
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            final HttpGet httpget = new HttpGet("http://httpbin.org/get");
+            final HttpGet httpget = new HttpGet("https://dd2.ekuaibao.com/api/openapi/v2/location?corpId=dingeddfxxxxxxxx");
 
             System.out.println("Executing request " + httpget.getMethod() + " " + httpget.getUri());
 
