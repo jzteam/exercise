@@ -65,6 +65,7 @@ import java.util.Set;
 public class Solution {
 
     /*
+        效率：5%速度，100%内存
         一次循环判断有效数独
         重点是如果3X3子数独唯一
         遍历二维数组，得到i,j，通过 box_sub_index = (i/3)*3 + j/3，就能给9个3X3的子数独编号 0-8了。
@@ -113,7 +114,49 @@ public class Solution {
         return true;
     }
 
+    public static boolean isValidSudoku1(char[][] board) {
+        // 改成使用数组: 一维索引表示编号，二维索引表示数值，元素1表示已存在此值
+        int[][] rows = new int[9][9];
+        int[][] cols = new int[9][9];
+        int[][] subs = new int[9][9];
+        int value; // 栈内存放，避免去堆中取
+        // 9X9的数独
+        for (int i = 0; i<9; i++) {
+            for (int j=0; j<9; j++) {
+                value = board[i][j] - 49;
+                // 过滤掉'.'，其对应int值是46
+                if (value == -3) {
+                    continue;
+                }
+                // 是否行内重复
+                if (rows[i][value] == 1){
+                    return false;
+                }
+                rows[i][value] = 1;
+
+                // 是否列内重复
+                if (cols[j][value] == 1){
+                    return false;
+                }
+                cols[j][value] = 1;
+
+                // 是否子数独内重复
+                int box_sub_index = (i/3)*3 + j/3;
+                if (subs[box_sub_index][value] == 1){
+                    return false;
+                }
+                subs[box_sub_index][value] = 1;
+            }
+        }
+        return true;
+    }
+
     public static void main(String[] args) {
+        System.out.println((int)'0');
+        System.out.println((int)'1');
+        System.out.println((int)'2');
+        System.out.println((int)'9');
+        System.out.println((int)'.' - 49);
         char[][] board = {
                 {'5','3','.','.','7','.','.','.','.'},
                 {'6','.','.','1','9','5','.','.','.'},
@@ -125,7 +168,7 @@ public class Solution {
                 {'.','.','.','4','1','9','.','.','5'},
                 {'.','.','.','.','8','.','.','7','9'}
         };
-        System.out.println(isValidSudoku(board));
+        System.out.println(isValidSudoku1(board));
 
         char[][] b = {
             {'8','3','.','.','7','.','.','.','.'},
@@ -138,8 +181,9 @@ public class Solution {
             {'.','.','.','4','1','9','.','.','5'},
             {'.','.','.','.','8','.','.','7','9'}
         };
+        System.out.println(isValidSudoku1(b));
 
-        // char[][] b = {{'5','3','.','.','7','.','.','.','.'},{'6','.','.','1','9','5','.','.','.'},{'.','9','8','.','.','.','.','6','.'},{'8','.','.','.','6','.','.','.','3'},{'4','.','.','8','.','3','.','.','1'},{'7','.','.','.','2','.','.','.','6'},{'.','6','.','.','.','.','2','8','.'},{'.','.','.','4','1','9','.','.','5'},{'.','.','.','.','8','.','.','7','9'}};
-        System.out.println(isValidSudoku(b));
+        char[][] bb = {{'5','3','.','.','7','.','.','.','.'},{'6','.','.','1','9','5','.','.','.'},{'.','9','8','.','.','.','.','6','.'},{'8','.','.','.','6','.','.','.','3'},{'4','.','.','8','.','3','.','.','1'},{'7','.','.','.','2','.','.','.','6'},{'.','6','.','.','.','.','2','8','.'},{'.','.','.','4','1','9','.','.','5'},{'.','.','.','.','8','.','.','7','9'}};
+        System.out.println(isValidSudoku1(bb));
     }
 }
