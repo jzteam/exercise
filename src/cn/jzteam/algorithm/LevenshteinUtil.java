@@ -72,7 +72,7 @@ public class LevenshteinUtil {
 	 */
 	 
 	 public static float getSimilarityRatio(String str, String target) {
-	  return 1 - (float)compare(str, target)/Math.max(str.length(), target.length());
+	  return 1 - (float)compare(str, target)/ Math.max(str.length(), target.length());
 	 }
 	 
 	  
