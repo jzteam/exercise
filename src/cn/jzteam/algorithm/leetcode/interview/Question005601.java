@@ -40,7 +40,8 @@ public class Question005601 {
         }
         // 找一个不同的位
         int pos = 0;
-        while ((result >>> pos++) % 2 != 1);
+        // 要使用0来判断，因为取余可能存在正负
+        while ((result >>> pos++) % 2 == 0);
         pos--;
 
         int num1 = 0;
@@ -48,7 +49,8 @@ public class Question005601 {
         // 根据这个位来分组
         for (int i=0;i<nums.length;i++) {
             // >>> 优先级 比 % 低，要加括号
-            if ((nums[i] >>> pos) % 2 == 1) {
+            // 要使用0来判断，因为取余可能存在正负
+            if ((nums[i] >>> pos) % 2 == 0) {
                 num1 ^= nums[i];
             } else {
                 num2 ^= nums[i];
@@ -61,5 +63,8 @@ public class Question005601 {
 //        System.out.println(JSON.toJSONString(singleNumbers(new int[]{4,1,4,6})));
 //        System.out.println(JSON.toJSONString(singleNumbers(new int[]{1,2,10,4,1,4,3,3})));
         System.out.println(JSON.toJSONString(singleNumbers(new int[]{6,2,3,3}))); // 6,2
+        System.out.println(JSON.toJSONString(singleNumbers(new int[]{-1139700704,-1653765433})));
+        // [1403943960,959128864]
+        System.out.println(JSON.toJSONString(singleNumbers(new int[]{1193730082,587035181,-814709193,1676831308,-511259610,284593787,-2058511940,1970250135,-814709193,-1435587299,1308886332,-1435587299,1676831308,1403943960,-421534159,-528369977,-2058511940,1636287980,-1874234027,197290672,1976318504,-511259610,1308886332,336663447,1636287980,197290672,1970250135,1976318504,959128864,284593787,-528369977,-1874234027,587035181,-421534159,-786223891,933046536,959112204,336663447,933046536,959112204,1193730082,-786223891})));
     }
 }
