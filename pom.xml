@@ -162,6 +162,18 @@
 		<!--</dependency>-->
 
 		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.27.0-GA</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.okcoin.ucenter</groupId>
+			<artifactId>okcoin-users-core</artifactId>
+			<version>5.0.0-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.jboss.marshalling</groupId>
 			<artifactId>jboss-marshalling-serial</artifactId>
 			<version>2.0.2.Final</version>
