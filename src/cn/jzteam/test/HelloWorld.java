@@ -24,7 +24,6 @@ public class HelloWorld {
             BufferedReader br = new BufferedReader(isr);
             String result = null;
             while ((result = br.readLine()) != null) {
-                System.out.println("result="+result);
                 if (result.contains("UsersApplication")) {
                     result = result.substring(0, result.indexOf(" "));
                     break;
