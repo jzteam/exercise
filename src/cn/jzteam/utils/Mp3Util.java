@@ -10,10 +10,12 @@ import java.io.IOException;
 public class Mp3Util {
 
     public static void main(String[] args) throws IOException {
-        String src = "C:\\CloudMusic\\宋冬野 - 董小姐.mp3";
-        String desc = "C:\\CloudMusic\\cut.mp3";
+//        String src = "C:\\CloudMusic\\宋冬野 - 董小姐.mp3";
+//        String desc = "C:\\CloudMusic\\cut.mp3";
+        String src = "/Users/jzteam/Documents/work/test_data/test.mov";
+        String desc = "/Users/jzteam/Documents/work/test_data/test_small.mov";
 
-        Mp3Util.cutByPath(src, desc, 187, 248, 315);
+        Mp3Util.cutByPath(src, desc, 0, 4, 16);
     }
 
     public static void cutByPath(String src, String desc, long beginSecond, long endSecond, long totalSecond)
