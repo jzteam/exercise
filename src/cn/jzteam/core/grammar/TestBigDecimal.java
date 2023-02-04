@@ -26,7 +26,7 @@ public class TestBigDecimal {
 ////            return;
 //        }
     	
-    	test2();
+    	test3();
     }
     
     private static void test1(){
@@ -37,6 +37,12 @@ public class TestBigDecimal {
     private static void test2(){
         BigDecimal bigDecimal = BigDecimal.valueOf(1234565433456765.345676543000000000D);
         System.out.println(bigDecimal.toString());
+    }
+
+    private static void test3(){
+        // 测试 toString 是否自动舍弃0
+        BigDecimal bigDecimal = BigDecimal.valueOf(120000.000000100);
+        System.out.println(bigDecimal.setScale(8).stripTrailingZeros().toPlainString());
     }
 
 }
