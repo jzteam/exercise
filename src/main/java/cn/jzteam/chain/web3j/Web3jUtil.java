@@ -16,7 +16,7 @@ public class Web3jUtil {
 
     public static void main(String[] args) {
         try {
-            Web3j web3j = Web3j.build(new HttpService("https://exchainrpc.okex.org/"));
+            Web3j web3j = Web3j.build(new HttpService(EnumChain.OKC.getUrl()));
             //
             String privateKey = "";
             Credentials credentials = Credentials.create(privateKey);
